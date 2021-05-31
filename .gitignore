@@ -5,6 +5,8 @@ __pycache__/
 .vscode
 data/*
 expr/*
-saved_models/*
+models/*
+!.gitkeep
+!*.md
 *.ckpt
 temp
