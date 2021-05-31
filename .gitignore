@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.idea
+.vscode
+data/*
+expr/*
+saved_models/*
+*.ckpt
+temp
