@@ -3,10 +3,8 @@ __pycache__/
 *$py.class
 .idea
 .vscode
-data/*
 expr/*
-models/*
+archive/*
 !.gitkeep
 !*.md
 *.ckpt
-temp

@@ -1,11 +1,11 @@
-import torch
+import random
 from torch.utils import data
 from torch.utils.data.sampler import WeightedRandomSampler
 from torchvision import transforms
 
 import numpy as np
 
-from src.dataset import DefaultDataset
+from data.dataset import DefaultDataset
 
 
 def _make_balanced_sampler(labels):

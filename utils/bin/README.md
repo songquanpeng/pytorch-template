@@ -1,4 +1,6 @@
-# Python Scripts
+# Bin Sub-folder
+> This folder is used to save executable utils.
+
 ## demo.py
 This is a demo script.
 

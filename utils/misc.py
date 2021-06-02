@@ -17,8 +17,8 @@ def get_datetime():
     return datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
 
-def save_config(target_path, config):
-    with open(os.path.join(target_path, "config.json"), 'w') as f:
+def save_json(target_path, config, filename='config'):
+    with open(os.path.join(target_path, f"{filename}.json"), 'w') as f:
         print(json.dumps(config.__dict__, sort_keys=True, indent=4), file=f)
 
 

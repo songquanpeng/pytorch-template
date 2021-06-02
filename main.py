@@ -5,14 +5,14 @@ import torch
 import numpy as np
 from torch.backends import cudnn
 
-from utils.utils import get_datetime, str2bool, save_config
+from utils.misc import get_datetime, str2bool, save_json
 
 
 def main(args):
     exp_path = os.path.join(args.exp_dir, args.exp_id)
     if not os.path.exists(exp_path):
         os.makedirs(exp_path)
-    save_config(exp_path, args)
+    save_json(exp_path, args)
     print(args)
 
     cudnn.benchmark = True
