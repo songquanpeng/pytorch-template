@@ -2,6 +2,10 @@ import datetime
 import os
 import requests
 import json
+import random
+import torch
+import numpy as np
+from torch.backends import cudnn
 
 
 def send_message(message):
@@ -24,3 +28,10 @@ def save_json(target_path, config, filename='config'):
 
 def str2bool(v):
     return v.lower() in ['true']
+
+
+def basic_setup(args):
+    cudnn.benchmark = args.cudnn_benchmark
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
+    random.seed(args.seed)

@@ -14,5 +14,10 @@ def list_folder(path):
 
 def make_paths(paths):
     for path in paths:
-        if not os.path.exists(path):
-            os.makedirs(path)
+        os.makedirs(path, exist_ok=True)
+
+
+def prepare_dirs(dirs):
+    for dir_ in dirs:
+        if not os.path.exists(dir_):
+            os.makedirs(dir_)
