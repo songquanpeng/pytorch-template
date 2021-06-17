@@ -6,9 +6,8 @@ import datetime
 from munch import Munch
 from utils.file import prepare_dirs
 from utils.checkpoint import CheckpointIO
-from utils.logger import Logger
 from models.build import build_model
-from solver.utils import he_init, moving_average, requires_grad
+from solver.utils import he_init, moving_average
 from solver.loss import compute_g_loss, compute_d_loss
 from data.fetcher import Fetcher
 
@@ -51,6 +50,7 @@ class Solver:
 
         self.use_tensorboard = args.use_tensorboard
         if self.use_tensorboard:
+            from utils.logger import Logger
             self.logger = Logger(self.log_dir)
 
     def initialize_parameters(self):

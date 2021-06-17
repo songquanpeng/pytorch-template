@@ -27,6 +27,7 @@ def parse_args():
 
     # About this experiment.
     parser.add_argument('--about', type=str, default="")
+    parser.add_argument('--hash', type=str, required=True, help="Git commit hash for this experiment.")
     parser.add_argument('--exp_id', type=str, default=get_datetime(), help='Folder name and id for this experiment.')
     parser.add_argument('--exp_dir', type=str, default='expr')
 
