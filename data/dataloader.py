@@ -1,11 +1,12 @@
-import random
+import os
 from torch.utils import data
 from torch.utils.data.sampler import WeightedRandomSampler
 from torchvision import transforms
+from torchvision.datasets import ImageFolder
 
 import numpy as np
 
-from data.dataset import DefaultDataset
+from data.dataset import DefaultDataset, ClassFolderDataset
 
 
 def _make_balanced_sampler(labels):
@@ -20,12 +21,7 @@ def get_train_loader(args):
     norm_mean = [0.5, 0.5, 0.5]
     norm_std = [0.5, 0.5, 0.5]
     if args.dataset == 'CelebA':
-        crop = transforms.RandomResizedCrop(
-            img_size, scale=[0.8, 1.0], ratio=[0.9, 1.1])
-        rand_crop = transforms.Lambda(lambda x: crop(x) if random.random() < args.randcrop_prob else x)
-
         transform = transforms.Compose([
-            rand_crop,
             transforms.Resize([img_size, img_size]),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
@@ -41,16 +37,30 @@ def get_train_loader(args):
     else:
         assert False, f"Unsupported dataset: {args.dataset}"
 
-    dataset = DefaultDataset(args.dataset_path, transform)
-    # sampler = _make_balanced_sampler(dataset.train_labels)
+    dataset = ImageFolder(root=os.path.join(args.dataset_path, 'train'), transform=transform)
+    sampler = _make_balanced_sampler(dataset.targets)
 
     return data.DataLoader(dataset=dataset,
                            batch_size=args.batch_size,
-                           # sampler=sampler,
+                           sampler=sampler,
                            num_workers=args.num_workers,
                            pin_memory=True,
                            drop_last=True)
 
 
 def get_test_loader(args):
-    pass
+    img_size = args.img_size
+    norm_mean = [0.5, 0.5, 0.5]
+    norm_std = [0.5, 0.5, 0.5]
+    transform = transforms.Compose([
+        transforms.Resize([img_size, img_size]),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=norm_mean, std=norm_std),
+    ])
+    dataset = ImageFolder(root=os.path.join(args.dataset_path, 'val'), transform=transform)
+
+    return data.DataLoader(dataset=dataset,
+                           batch_size=args.batch_size,
+                           shuffle=True,
+                           num_workers=args.num_workers,
+                           pin_memory=True)

@@ -12,7 +12,7 @@ class Discriminator(nn.Module):
         img_size = args.img_size
         num_domains = args.num_domains
         dim_in = 2 ** 14 // img_size
-        dim_out = dim_in
+        dim_out = None
         max_conv_dim = 512
         blocks = []
         blocks += [nn.Conv2d(3, dim_in, 3, 1, 1)]

@@ -76,7 +76,7 @@ class Solver:
             ckptio.load_from_path(path)
 
     def zero_grad(self):
-        for optimizer in self.optims:
+        for optimizer in self.optims.values():
             optimizer.zero_grad()
 
     def train(self, loaders):
@@ -85,8 +85,8 @@ class Solver:
         nets_ema = self.nets_ema
         optims = self.optims
 
-        train_fetcher = Fetcher(loaders.train, args.dataset, args.device)
-        test_fetcher = Fetcher(loaders.test, args.dataset, args.device)
+        train_fetcher = Fetcher(loaders.train, args)
+        test_fetcher = Fetcher(loaders.test, args)
 
         # Those fixed samples are used to show the trend.
         fixed_train_sample = next(train_fetcher)
@@ -101,27 +101,30 @@ class Solver:
         print('Start training...')
         start_time = time.time()
         for i in range(args.start_iter, args.end_iter):
-            sample = next(train_fetcher)
+            sample_org = next(train_fetcher)  # sample that to be translated
+            sample_ref = next(train_fetcher)  # reference samples
 
             # Train the discriminator
-            d_loss, d_loss_ref = compute_d_loss(nets, args, sample)
+            d_loss, d_loss_ref = compute_d_loss(nets, args, sample_org, sample_ref)
             self.zero_grad()
             d_loss.backward()
             optims.discriminator.step()
 
             # Train the generator
-            g_loss, g_loss_ref = compute_g_loss(nets, args, sample)
+            g_loss, g_loss_ref = compute_g_loss(nets, args, sample_org, sample_ref)
             self.zero_grad()
             g_loss.backward()
             optims.generator.step()
+            optims.mapping_network.step()
 
             # Update generator_ema
             moving_average(nets.generator, nets_ema.generator, beta=args.ema_beta)
+            moving_average(nets.mapping_network, nets_ema.mapping_network, beta=args.ema_beta)
 
             if (i + 1) % args.log_every == 0:
                 elapsed = time.time() - start_time
                 elapsed = str(datetime.timedelta(seconds=elapsed))[:-7]
-                log = "[%s][%i/%i]: " % (elapsed, i + 1, args.total_iters)
+                log = "[%s]-[%i/%i]: " % (elapsed, i + 1, args.end_iter)
                 all_losses = dict()
                 for loss, prefix in zip([d_loss_ref, g_loss_ref], ['D/', 'G/']):
                     for key, value in loss.items():
@@ -152,7 +155,7 @@ class Solver:
 
     @torch.no_grad()
     def evaluate(self):
-        assert self.args.use_iter != 0
-        self.load_model(self.args.use_iter)
+        assert self.args.eval_iter != 0
+        self.load_model(self.args.eval_iter)
         # TODO: Evaluate the model
         pass

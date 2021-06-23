@@ -3,6 +3,7 @@ import sys
 import json
 import os
 import argparse
+from munch import Munch
 from utils.misc import get_datetime, str2bool, save_json
 
 
@@ -11,6 +12,7 @@ def load_cfg():
     if len(sys.argv) == 2 and sys.argv[1].endswith('.json'):
         with open(sys.argv[1], 'r') as f:
             cfg = json.load(f)
+            cfg = Munch(cfg)
     else:
         cfg = parse_args()
     return cfg
@@ -27,7 +29,7 @@ def parse_args():
 
     # About this experiment.
     parser.add_argument('--about', type=str, default="")
-    parser.add_argument('--hash', type=str, required=True, help="Git commit hash for this experiment.")
+    parser.add_argument('--hash', type=str, required=False, help="Git commit hash for this experiment.")
     parser.add_argument('--exp_id', type=str, default=get_datetime(), help='Folder name and id for this experiment.')
     parser.add_argument('--exp_dir', type=str, default='expr')
 
@@ -38,9 +40,11 @@ def parse_args():
 
     # Model related arguments.
     parser.add_argument('--img_size', type=int, default=128)
+    parser.add_argument('--latent_dim', type=int, default=16)
+    parser.add_argument('--style_dim', type=int, default=64)
 
     # Dataset related arguments.
-    parser.add_argument('--dataset', type=str, choices=['CUB2011', 'CelebA'])
+    parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--dataset_path', type=str, required=True)
     parser.add_argument('--num_domains', type=int, required=True)
 
@@ -48,9 +52,10 @@ def parse_args():
     parser.add_argument('--parameter_init', type=str, default='he', choices=['he', 'default'])
     parser.add_argument('--start_iter', type=int, default=0)
     parser.add_argument('--end_iter', type=int, default=100000)
+    parser.add_argument('--num_workers', type=int, default=4)
 
     # Evaluation related arguments
-    parser.add_argument('--use_iter', type=int, default=0, help='Use which iter to evaluate.')
+    parser.add_argument('--eval_iter', type=int, default=0, help='Use which iter to evaluate.')
 
     # Optimizing related arguments.
     parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate for generator.")
