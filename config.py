@@ -61,7 +61,7 @@ def parse_args():
 
     # Optimizing related arguments.
     parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate for generator.")
-    parser.add_argument('--d_lr', type=float, default=4e-4, help="Learning rate for discriminator.")
+    parser.add_argument('--d_lr', type=float, default=1e-4, help="Learning rate for discriminator.")
     parser.add_argument('--beta1', type=float, default=0.0)
     parser.add_argument('--beta2', type=float, default=0.99)
     parser.add_argument('--weight_decay', type=float, default=1e-4)
@@ -75,7 +75,7 @@ def parse_args():
     parser.add_argument('--log_every', type=int, default=10)
     parser.add_argument('--sample_every', type=int, default=1000)
     parser.add_argument('--save_every', type=int, default=5000)
-    parser.add_argument('--eval_every', type=int, default=10000)
+    parser.add_argument('--eval_every', type=int, default=5000)
 
     # Log related arguments.
     parser.add_argument('--use_tensorboard', type=str2bool, default=False)
