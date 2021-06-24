@@ -13,8 +13,10 @@ def load_cfg():
         with open(sys.argv[1], 'r') as f:
             cfg = json.load(f)
             cfg = Munch(cfg)
+            cfg.exp_id = get_datetime()
     else:
         cfg = parse_args()
+        cfg = Munch(cfg.__dict__)
     return cfg
 
 

@@ -7,7 +7,7 @@ from munch import Munch
 from utils.file import prepare_dirs
 from utils.checkpoint import CheckpointIO
 from models.build import build_model
-from solver.utils import he_init, moving_average
+from solver.utils import he_init, moving_average, translate_using_latent
 from solver.loss import compute_g_loss, compute_d_loss
 from data.fetcher import Fetcher
 
@@ -136,8 +136,12 @@ class Solver:
                         self.logger.scalar_summary(tag, value, i + 1)
 
             if (i + 1) % args.sample_every == 0:
-                # TODO: Save the sampled images to self.sample_dir
-                pass
+                N = args.batch_size
+                repeat_num = 2
+                y_trg_list = [torch.tensor(y).repeat(N).to(self.device) for y in range(min(args.num_domains, 5))]
+                z_trg_list = torch.randn(repeat_num, 1, args.latent_dim).repeat(1, N, 1).to(self.device)
+                translate_using_latent(nets, args, fixed_test_sample.x, y_trg_list, z_trg_list,
+                                       os.path.join(self.sample_dir, f"latent_{i + 1}.jpg"))
 
             if (i + 1) % args.save_every == 0:
                 self.save_model(i + 1)

@@ -6,7 +6,7 @@ from data.dataloader import get_train_loader, get_test_loader
 
 
 def main(args):
-    print(args)
+    print(args.__dict__)
     basic_setup(args)
     if args.mode == 'train':
         solver = Solver(args)
