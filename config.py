@@ -4,7 +4,7 @@ import json
 import os
 import argparse
 from munch import Munch
-from utils.misc import get_datetime, str2bool, save_json
+from utils.misc import get_datetime, str2bool, save_json, get_commit_hash
 
 
 def load_cfg():
@@ -17,6 +17,8 @@ def load_cfg():
     else:
         cfg = parse_args()
         cfg = Munch(cfg.__dict__)
+        if not cfg.hash:
+            cfg.hash = get_commit_hash()
     return cfg
 
 

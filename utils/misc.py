@@ -35,3 +35,9 @@ def basic_setup(args):
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     random.seed(args.seed)
+
+
+def get_commit_hash():
+    stream = os.popen('git log -n 1')
+    output = stream.read()
+    return output[7:13]
