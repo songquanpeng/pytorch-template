@@ -21,6 +21,9 @@ def load_cfg():
         cfg = Munch(cfg.__dict__)
         if not cfg.hash:
             cfg.hash = get_commit_hash()
+    current_hash = get_commit_hash()
+    if current_hash != cfg.hash:
+        print(f"Warning: unmatched git commit hash: `{current_hash}` & `{cfg.hash}`.")
     return cfg
 
 
@@ -28,6 +31,10 @@ def save_cfg(cfg):
     exp_path = os.path.join(cfg.exp_dir, cfg.exp_id)
     os.makedirs(exp_path, exist_ok=True)
     save_json(exp_path, cfg)
+
+
+def print_cfg(cfg):
+    print(json.dumps(cfg, indent=4))
 
 
 def parse_args():
