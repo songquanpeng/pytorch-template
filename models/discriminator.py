@@ -4,7 +4,6 @@ import numpy as np
 from models.layers import ResBlk
 
 
-# TODO: modify the model definition here.
 class Discriminator(nn.Module):
     def __init__(self, args):
         super().__init__()

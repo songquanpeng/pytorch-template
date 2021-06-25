@@ -14,6 +14,8 @@ def load_cfg():
             cfg = json.load(f)
             cfg = Munch(cfg)
             cfg.exp_id = get_datetime()
+            if not cfg.about:
+                cfg.about = f"Copied from: {sys.argv[1]}"
     else:
         cfg = parse_args()
         cfg = Munch(cfg.__dict__)
