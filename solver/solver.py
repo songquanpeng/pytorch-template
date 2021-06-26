@@ -5,13 +5,16 @@ import datetime
 
 from munch import Munch
 from utils.checkpoint import CheckpointIO
+from utils.misc import get_datetime
 from utils.model import print_network
+from utils.file import delete_dir
 from models.build import build_model
 from solver.utils import he_init, moving_average
-from solver.misc import translate_using_latent
+from solver.misc import translate_using_latent, generate_samples
 from solver.loss import compute_g_loss, compute_d_loss
 from data.fetcher import Fetcher
 from metrics.eval import calculate_metrics
+from metrics.fid import calculate_fid_given_paths
 
 
 class Solver:
@@ -148,15 +151,24 @@ class Solver:
                 calculate_metrics(nets, args, step)
 
     @torch.no_grad()
-    def sample(self, loaders):
+    def sample(self):
         args = self.args
+        assert args.eval_iter != 0
+        self.load_model(args.eval_iter)
         nets_ema = self.nets_ema
-        # TODO: Use the trained model to sample
-        pass
+        if not args.sample_id:
+            args.sample_id = get_datetime()
+        sample_path = os.path.join(args.sample_dir, args.sample_id)
+        generate_samples(nets_ema, args, sample_path)
+        return sample_path
 
     @torch.no_grad()
     def evaluate(self):
-        assert self.args.eval_iter != 0
-        self.load_model(self.args.eval_iter)
-        # TODO: Evaluate the model
-        pass
+        args = self.args
+        target_path = args.test_path
+        sample_path = self.sample()
+        fid = calculate_fid_given_paths(paths=[target_path, sample_path], img_size=args.img_size,
+                                        batch_size=args.eval_batch_size)
+        print(f"FID is: {fid}")
+        if not args.keep_eval_files:
+            delete_dir(sample_path)

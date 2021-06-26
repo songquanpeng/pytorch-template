@@ -10,11 +10,14 @@ from utils.file import save_json
 
 def load_cfg():
     # There are two ways to load config, use a json file or command line arguments.
-    if len(sys.argv) == 2 and sys.argv[1].endswith('.json'):
+    if len(sys.argv) >= 2 and sys.argv[1].endswith('.json'):
         with open(sys.argv[1], 'r') as f:
             cfg = json.load(f)
             cfg = Munch(cfg)
-            cfg.exp_id = get_datetime()
+            if len(sys.argv) >= 3:
+                cfg.exp_id = sys.argv[2]
+            else:
+                print("Warning: using existing experiment dir.")
             if not cfg.about:
                 cfg.about = f"Copied from: {sys.argv[1]}"
     else:
@@ -31,7 +34,10 @@ def load_cfg():
 def save_cfg(cfg):
     exp_path = os.path.join(cfg.exp_dir, cfg.exp_id)
     os.makedirs(exp_path, exist_ok=True)
-    save_json(exp_path, cfg)
+    filename = cfg.mode
+    if cfg.mode == 'train' and cfg.start_iter != 0:
+        filename = "resume"
+    save_json(exp_path, cfg, filename)
 
 
 def print_cfg(cfg):
@@ -69,8 +75,12 @@ def parse_args():
     parser.add_argument('--num_domains', type=int)
     parser.add_argument('--domains', type=str, nargs='+')
 
+    # Sampling related arguments
+    parser.add_argument('--sample_id', type=str)
+
     # Evaluation related arguments
     parser.add_argument('--eval_iter', type=int, default=0, help='Use which iter to evaluate.')
+    parser.add_argument('--keep_eval_files', type=str2bool, default=True)
     parser.add_argument('--eval_repeat_num', type=int, default=1)
     parser.add_argument('--eval_batch_size', type=int, default=32)
     parser.add_argument('--test_path', type=str, required=True)

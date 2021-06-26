@@ -25,8 +25,10 @@ def generate_samples(nets, args, path):
     args.batch_size = args.eval_batch_size
     loader = get_test_loader(**args)
     for src_idx, src_domain in enumerate(args.domains):
-        target_domains = [domain for domain in args.domains if domain != src_domain]
+        target_domains = [domain for domain in args.domains]
         for trg_idx, trg_domain in enumerate(target_domains):
+            if trg_domain == src_domain:
+                continue
             save_path = os.path.join(path, f"{src_domain}2{trg_domain}")
             make_path(save_path)
             for i, (query_image, _) in enumerate(tqdm(loader, total=len(loader))):

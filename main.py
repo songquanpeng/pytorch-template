@@ -7,16 +7,16 @@ from data.loader import get_train_loader, get_test_loader
 
 def main(args):
     basic_setup(args)
+    solver = Solver(args)
     if args.mode == 'train':
-        solver = Solver(args)
         loaders = Munch(train=get_train_loader(**args), test=get_test_loader(**args))
         solver.train(loaders)
     elif args.mode == 'sample':
-        pass
+        solver.sample()
     elif args.mode == 'eval':
-        pass
+        solver.evaluate()
     else:
-        assert False
+        assert False, f"Unimplemented mode: {args.mode}"
 
 
 if __name__ == '__main__':

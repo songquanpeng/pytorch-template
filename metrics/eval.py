@@ -7,6 +7,7 @@ from utils.file import write_record
 
 @torch.no_grad()
 def calculate_metrics(nets, args, step):
+    write_record(f"Calculating metrics for step {step}...", args.record_file)
     sample_path = os.path.join(args.eval_dir, f"step_{step}")
     generate_samples(nets, args, sample_path)
     calculate_fid(args, sample_path)

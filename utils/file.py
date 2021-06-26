@@ -1,6 +1,7 @@
 import os
 import glob
 import json
+import shutil
 
 
 def list_all_images(path, full_path=True):
@@ -47,3 +48,7 @@ def write_record(record, file_path, print_screen=True):
         print(record)
     with open(file_path, 'a') as f:
         f.write(record + "\n")
+
+
+def delete_dir(path):
+    shutil.rmtree(path)
