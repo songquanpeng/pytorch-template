@@ -4,13 +4,14 @@ import time
 import datetime
 
 from munch import Munch
-from utils.file import prepare_dirs
 from utils.checkpoint import CheckpointIO
 from utils.model import print_network
 from models.build import build_model
-from solver.utils import he_init, moving_average, translate_using_latent
+from solver.utils import he_init, moving_average
+from solver.misc import translate_using_latent
 from solver.loss import compute_g_loss, compute_d_loss
 from data.fetcher import Fetcher
+from metrics.eval import calculate_metrics
 
 
 class Solver:
@@ -18,14 +19,6 @@ class Solver:
         super().__init__()
         self.args = args
         self.device = torch.device(args.device)
-
-        # Directories
-        self.log_dir = os.path.join(args.exp_dir, args.exp_id, "logs")
-        self.sample_dir = os.path.join(args.exp_dir, args.exp_id, "samples")
-        self.model_save_dir = os.path.join(args.exp_dir, args.exp_id, "models")
-        self.result_dir = os.path.join(args.exp_dir, args.exp_id, "results")
-        prepare_dirs([self.log_dir, self.sample_dir, self.model_save_dir, self.result_dir])
-
         self.nets, self.nets_ema = build_model(args)
         for name, module in self.nets.items():
             print_network(module, name)
@@ -45,16 +38,16 @@ class Solver:
                     betas=(args.beta1, args.beta2),
                     weight_decay=args.weight_decay)
             self.ckptios = [
-                CheckpointIO(self.model_save_dir + '/{:06d}_nets.ckpt', **self.nets),
-                CheckpointIO(self.model_save_dir + '/{:06d}_nets_ema.ckpt', **self.nets_ema),
-                CheckpointIO(self.model_save_dir + '/{:06d}_optims.ckpt', **self.optims)]
+                CheckpointIO(args.model_dir + '/{:06d}_nets.ckpt', **self.nets),
+                CheckpointIO(args.model_dir + '/{:06d}_nets_ema.ckpt', **self.nets_ema),
+                CheckpointIO(args.model_dir + '/{:06d}_optims.ckpt', **self.optims)]
         else:
-            self.ckptios = [CheckpointIO(self.model_save_dir + '/{:06d}_nets_ema.ckpt', **self.nets_ema)]
+            self.ckptios = [CheckpointIO(args.model_dir + '/{:06d}_nets_ema.ckpt', **self.nets_ema)]
 
         self.use_tensorboard = args.use_tensorboard
         if self.use_tensorboard:
             from utils.logger import Logger
-            self.logger = Logger(self.log_dir)
+            self.logger = Logger(args.log_dir)
 
     def initialize_parameters(self):
         if self.args.parameter_init == 'he':
@@ -103,7 +96,7 @@ class Solver:
 
         print('Start training...')
         start_time = time.time()
-        for i in range(args.start_iter, args.end_iter):
+        for step in range(args.start_iter + 1, args.end_iter + 1):
             sample_org = next(train_fetcher)  # sample that to be translated
             sample_ref = next(train_fetcher)  # reference samples
 
@@ -124,10 +117,10 @@ class Solver:
             moving_average(nets.generator, nets_ema.generator, beta=args.ema_beta)
             moving_average(nets.mapping_network, nets_ema.mapping_network, beta=args.ema_beta)
 
-            if (i + 1) % args.log_every == 0:
+            if step % args.log_every == 0:
                 elapsed = time.time() - start_time
                 elapsed = str(datetime.timedelta(seconds=elapsed))[:-7]
-                log = "[%s]-[%i/%i]: " % (elapsed, i + 1, args.end_iter)
+                log = "[%s]-[%i/%i]: " % (elapsed, step, args.end_iter)
                 all_losses = dict()
                 for loss, prefix in zip([d_loss_ref, g_loss_ref], ['D/', 'G/']):
                     for key, value in loss.items():
@@ -136,24 +129,23 @@ class Solver:
                 print(log)
                 if self.use_tensorboard:
                     for tag, value in all_losses.items():
-                        self.logger.scalar_summary(tag, value, i + 1)
+                        self.logger.scalar_summary(tag, value, step)
 
-            if (i + 1) % args.sample_every == 0:
+            if step % args.sample_every == 0:
                 N = args.batch_size
                 repeat_num = 2
                 y_trg_list = [torch.tensor(y).repeat(N).to(self.device) for y in range(min(args.num_domains, 5))]
                 z_trg_list = torch.randn(repeat_num, 1, args.latent_dim).repeat(1, N, 1).to(self.device)
                 translate_using_latent(nets, args, fixed_test_sample.x, y_trg_list, z_trg_list,
-                                       os.path.join(self.sample_dir, f"latent_test_{i + 1}.jpg"))
+                                       os.path.join(args.sample_dir, f"latent_test_{step}.jpg"))
                 translate_using_latent(nets, args, fixed_train_sample.x, y_trg_list, z_trg_list,
-                                       os.path.join(self.sample_dir, f"latent_train_{i + 1}.jpg"))
+                                       os.path.join(args.sample_dir, f"latent_train_{step}.jpg"))
 
-            if (i + 1) % args.save_every == 0:
-                self.save_model(i + 1)
+            if step % args.save_every == 0:
+                self.save_model(step)
 
-            if (i + 1) % args.eval_every == 0:
-                # TODO: Evaluate the model
-                pass
+            if step % args.eval_every == 0:
+                calculate_metrics(nets, args, step)
 
     @torch.no_grad()
     def sample(self, loaders):

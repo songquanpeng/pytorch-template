@@ -2,15 +2,14 @@ from munch import Munch
 from config import load_cfg, save_cfg, print_cfg
 from utils.misc import basic_setup
 from solver.solver import Solver
-from data.dataloader import get_train_loader, get_test_loader
+from data.loader import get_train_loader, get_test_loader
 
 
 def main(args):
     basic_setup(args)
     if args.mode == 'train':
         solver = Solver(args)
-        loaders = Munch(train=get_train_loader(args),
-                        test=get_test_loader(args))
+        loaders = Munch(train=get_train_loader(**args), test=get_test_loader(**args))
         solver.train(loaders)
     elif args.mode == 'sample':
         pass

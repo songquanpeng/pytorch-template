@@ -4,7 +4,8 @@ import json
 import os
 import argparse
 from munch import Munch
-from utils.misc import get_datetime, str2bool, save_json, get_commit_hash
+from utils.misc import get_datetime, str2bool, get_commit_hash
+from utils.file import save_json
 
 
 def load_cfg():
@@ -58,17 +59,21 @@ def parse_args():
 
     # Dataset related arguments.
     parser.add_argument('--dataset', type=str, required=True)
-    parser.add_argument('--dataset_path', type=str, required=True)
-    parser.add_argument('--num_domains', type=int, required=True)
 
     # Training related arguments
     parser.add_argument('--parameter_init', type=str, default='he', choices=['he', 'default'])
     parser.add_argument('--start_iter', type=int, default=0)
     parser.add_argument('--end_iter', type=int, default=100000)
     parser.add_argument('--num_workers', type=int, default=4)
+    parser.add_argument('--train_path', type=str, required=True)
+    parser.add_argument('--num_domains', type=int)
+    parser.add_argument('--domains', type=str, nargs='+')
 
     # Evaluation related arguments
     parser.add_argument('--eval_iter', type=int, default=0, help='Use which iter to evaluate.')
+    parser.add_argument('--eval_repeat_num', type=int, default=1)
+    parser.add_argument('--eval_batch_size', type=int, default=32)
+    parser.add_argument('--test_path', type=str, required=True)
 
     # Optimizing related arguments.
     parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate for generator.")

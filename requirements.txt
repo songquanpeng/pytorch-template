@@ -1,6 +1,8 @@
-pillow~=8.2.0
+pillow~=7.2.0
 numpy~=1.18.5
 torchvision~=0.7.0
 requests~=2.24.0
-tensorflow~=2.4.0
+tensorflow~=2.3.0
 munch~=2.5.0
+tqdm~=4.48.2
+scipy~=1.4.1

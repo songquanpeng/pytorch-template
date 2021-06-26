@@ -1,11 +1,11 @@
 import datetime
 import os
 import requests
-import json
 import random
 import torch
 import numpy as np
 from torch.backends import cudnn
+from utils.file import prepare_dirs, list_sub_folders
 
 
 def send_message(message):
@@ -21,11 +21,6 @@ def get_datetime():
     return datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
 
-def save_json(target_path, config, filename='config'):
-    with open(os.path.join(target_path, f"{filename}.json"), 'w') as f:
-        print(json.dumps(config.__dict__, sort_keys=True, indent=4), file=f)
-
-
 def str2bool(v):
     return v.lower() in ['true']
 
@@ -35,6 +30,17 @@ def basic_setup(args):
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     random.seed(args.seed)
+
+    args.log_dir = os.path.join(args.exp_dir, args.exp_id, "logs")
+    args.sample_dir = os.path.join(args.exp_dir, args.exp_id, "samples")
+    args.model_dir = os.path.join(args.exp_dir, args.exp_id, "models")
+    args.eval_dir = os.path.join(args.exp_dir, args.exp_id, "eval")
+    prepare_dirs([args.log_dir, args.sample_dir, args.model_dir, args.eval_dir])
+    args.record_file = os.path.join(args.exp_dir, args.exp_id, "records.txt")
+
+    args.domains = list_sub_folders(args.train_path, full_path=False)
+    args.num_domains = len(args.domains)
+    assert args.num_domains == len(list_sub_folders(args.test_path, full_path=False))
 
 
 def get_commit_hash():

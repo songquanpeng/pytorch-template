@@ -22,15 +22,3 @@ def moving_average(model, model_ema, beta):
 def requires_grad(model, flag=True):
     for parameter in model.parameters():
         parameter.requires_grad = flag
-
-
-@torch.no_grad()
-def translate_using_latent(nets, args, x_src, y_trg_list, z_trg_list, filename):
-    x_concat = [x_src]
-    for y_trg in y_trg_list:
-        for z_trg in z_trg_list:
-            s_trg = nets.mapping_network(z_trg, y_trg)
-            x_fake = nets.generator(x_src, s_trg)
-            x_concat += [x_fake]
-    x_concat = torch.cat(x_concat, dim=0)
-    save_image(x_concat, x_src.size()[0], filename)
