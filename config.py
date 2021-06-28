@@ -65,6 +65,8 @@ def parse_args():
 
     # Dataset related arguments.
     parser.add_argument('--dataset', type=str, required=True)
+    parser.add_argument('--npz_path', type=str)
+    parser.add_argument('--npz_image_root', type=str)
 
     # Training related arguments
     parser.add_argument('--parameter_init', type=str, default='he', choices=['he', 'default'])

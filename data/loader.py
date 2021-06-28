@@ -6,7 +6,7 @@ from torchvision.datasets import ImageFolder
 
 import numpy as np
 
-from data.dataset import DefaultDataset, ClassFolderDataset
+from data.dataset import DefaultDataset
 
 
 def _make_balanced_sampler(labels):
