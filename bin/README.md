@@ -1,6 +1,9 @@
-# Scripts
-> Make sure you have saved the corresponding commit hash.
-> It's useful for feature reproduction.
+# Bin Sub-folder
+> This folder is used to save executable utils.
 
-## train.sh
+## demo.py
+This is a demo script.
+
+Run: `demo.py --parameter demo`
+
 Commit: `4e45c9`

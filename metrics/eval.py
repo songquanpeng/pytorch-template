@@ -10,7 +10,8 @@ def calculate_metrics(nets, args, step):
     write_record(f"Calculating metrics for step {step}...", args.record_file)
     sample_path = os.path.join(args.eval_dir, f"step_{step}")
     generate_samples(nets, args, sample_path)
-    calculate_fid(args, sample_path)
+    fid = calculate_fid(args, sample_path)
+    return fid
 
 
 @torch.no_grad()
@@ -29,3 +30,4 @@ def calculate_fid(args, sample_path):
             write_record(f"FID for {task}: {fid}", args.record_file)
     fid_mean = sum(fid_list) / len(fid_list)
     write_record(f"FID mean: {fid_mean}", args.record_file)
+    return fid_mean

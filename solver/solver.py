@@ -5,7 +5,7 @@ import datetime
 
 from munch import Munch
 from utils.checkpoint import CheckpointIO
-from utils.misc import get_datetime
+from utils.misc import get_datetime, send_message
 from utils.model import print_network
 from utils.file import delete_dir
 from models.build import build_model
@@ -56,8 +56,9 @@ class Solver:
         if self.args.parameter_init == 'he':
             for name, network in self.nets.items():
                 if 'ema' not in name:
-                    print('Initializing %s...' % name)
+                    print('Initializing %s...' % name, end=' ')
                     network.apply(he_init)
+                    print('Done.')
         elif self.args.parameter_init == 'default':
             # Do nothing because the parameters has been initialized in this manner.
             pass
@@ -148,7 +149,9 @@ class Solver:
                 self.save_model(step)
 
             if step % args.eval_every == 0:
-                calculate_metrics(nets, args, step)
+                fid = calculate_metrics(nets, args, step)
+                send_message(f"step: {step} fid {fid}")
+        send_message("Model training completed.")
 
     @torch.no_grad()
     def sample(self):
