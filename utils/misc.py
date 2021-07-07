@@ -1,5 +1,6 @@
 import datetime
 import os
+import subprocess
 import requests
 import random
 import torch
@@ -17,8 +18,9 @@ def send_message(message):
             print('Failed to send message.')
 
 
-def get_datetime():
-    return datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+def get_datetime(short=False):
+    format_str = '%Y%m%d%H%M%S' if short else '%Y-%m-%d_%H-%M-%S'
+    return datetime.datetime.now().strftime(format_str)
 
 
 def str2bool(v):
@@ -44,6 +46,7 @@ def basic_setup(args):
 
 
 def get_commit_hash():
-    stream = os.popen('git log -n 1')
-    output = stream.read()
+    process = subprocess.Popen(['git', 'log', '-n', '1'], stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    output = output.decode('utf-8')
     return output[7:13]

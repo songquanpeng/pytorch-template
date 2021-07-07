@@ -52,3 +52,7 @@ def write_record(record, file_path, print_screen=True):
 
 def delete_dir(path):
     shutil.rmtree(path)
+
+
+def copy(file, src, dst):
+    shutil.copyfile(os.path.join(src, file), os.path.join(dst, file))
