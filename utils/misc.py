@@ -39,6 +39,7 @@ def basic_setup(args):
     args.eval_dir = os.path.join(args.exp_dir, args.exp_id, "eval")
     prepare_dirs([args.log_dir, args.sample_dir, args.model_dir, args.eval_dir])
     args.record_file = os.path.join(args.exp_dir, args.exp_id, "records.txt")
+    args.loss_file = os.path.join(args.exp_dir, args.exp_id, "losses.csv")
 
     args.domains = list_sub_folders(args.train_path, full_path=False)
     args.num_domains = len(args.domains)

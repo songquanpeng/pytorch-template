@@ -2,7 +2,7 @@ import torch
 import os
 from solver.misc import generate_samples
 from metrics.fid import calculate_fid_given_paths
-from utils.file import write_record
+from utils.file import write_record, delete_dir
 
 
 @torch.no_grad()
@@ -11,6 +11,8 @@ def calculate_metrics(nets, args, step):
     sample_path = os.path.join(args.eval_dir, f"step_{step}")
     generate_samples(nets, args, sample_path)
     fid = calculate_fid(args, sample_path)
+    if not args.keep_eval_files:
+        delete_dir(sample_path)
     return fid
 
 

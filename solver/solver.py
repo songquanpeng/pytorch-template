@@ -7,7 +7,7 @@ from munch import Munch
 from utils.checkpoint import CheckpointIO
 from utils.misc import get_datetime, send_message
 from utils.model import print_network
-from utils.file import delete_dir
+from utils.file import delete_dir, write_record
 from models.build import build_model
 from solver.utils import he_init, moving_average
 from solver.misc import translate_using_latent, generate_samples
@@ -131,6 +131,12 @@ class Solver:
                         all_losses[prefix + key] = value
                 log += ' '.join(['%s: [%.4f]' % (key, value) for key, value in all_losses.items()])
                 print(log)
+                if args.save_loss:
+                    if step == args.log_every:
+                        header = ','.join([str(loss) for loss in all_losses.keys()])
+                        write_record(header, args.loss_file, False)
+                    log = ','.join([str(loss) for loss in all_losses.values()])
+                    write_record(log, args.loss_file, False)
                 if self.use_tensorboard:
                     for tag, value in all_losses.items():
                         self.logger.scalar_summary(tag, value, step)

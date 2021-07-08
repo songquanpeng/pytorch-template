@@ -82,7 +82,7 @@ def parse_args():
 
     # Evaluation related arguments
     parser.add_argument('--eval_iter', type=int, default=0, help='Use which iter to evaluate.')
-    parser.add_argument('--keep_eval_files', type=str2bool, default=True)
+    parser.add_argument('--keep_eval_files', type=str2bool, default=False)
     parser.add_argument('--eval_repeat_num', type=int, default=1)
     parser.add_argument('--eval_batch_size', type=int, default=32)
     parser.add_argument('--test_path', type=str, required=True)
@@ -107,6 +107,7 @@ def parse_args():
 
     # Log related arguments.
     parser.add_argument('--use_tensorboard', type=str2bool, default=False)
+    parser.add_argument('--save_loss', type=str2bool, default=True)
 
     # Others
     parser.add_argument('--seed', type=int, default=0, help='Seed for random number generator.')
