@@ -71,7 +71,7 @@ def parse_args():
     # Training related arguments
     parser.add_argument('--parameter_init', type=str, default='he', choices=['he', 'default'])
     parser.add_argument('--start_iter', type=int, default=0)
-    parser.add_argument('--end_iter', type=int, default=100000)
+    parser.add_argument('--end_iter', type=int, default=200000)
     parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--train_path', type=str, required=True)
     parser.add_argument('--num_domains', type=int)
@@ -86,6 +86,7 @@ def parse_args():
     parser.add_argument('--eval_repeat_num', type=int, default=1)
     parser.add_argument('--eval_batch_size', type=int, default=32)
     parser.add_argument('--test_path', type=str, required=True)
+    parser.add_argument('--eval_path', type=str, required=True, help="compare with those images")
 
     # Optimizing related arguments.
     parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate for generator.")

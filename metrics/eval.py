@@ -23,7 +23,7 @@ def calculate_fid(args, sample_path):
         target_domains = [domain for domain in args.domains if domain != src_domain]
         for trg_domain in target_domains:
             task = f"{src_domain}2{trg_domain}"
-            path_real = os.path.join(args.test_path, src_domain)
+            path_real = os.path.join(args.eval_path, src_domain)
             path_fake = os.path.join(sample_path, task)
             print(f'Calculating FID for {task}...')
             fid = calculate_fid_given_paths(paths=[path_real, path_fake], img_size=args.img_size,

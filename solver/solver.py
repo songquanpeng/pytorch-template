@@ -133,9 +133,9 @@ class Solver:
                 print(log)
                 if args.save_loss:
                     if step == args.log_every:
-                        header = ','.join([str(loss) for loss in all_losses.keys()])
+                        header = ','.join(['iter'] + [str(loss) for loss in all_losses.keys()])
                         write_record(header, args.loss_file, False)
-                    log = ','.join([str(loss) for loss in all_losses.values()])
+                    log = ','.join([str(step)] + [str(loss) for loss in all_losses.values()])
                     write_record(log, args.loss_file, False)
                 if self.use_tensorboard:
                     for tag, value in all_losses.items():
@@ -174,10 +174,12 @@ class Solver:
     @torch.no_grad()
     def evaluate(self):
         args = self.args
-        target_path = args.test_path
+        assert args.eval_path != "", "eval_path shouldn't be empty"
+        target_path = args.eval_path
         sample_path = self.sample()
         fid = calculate_fid_given_paths(paths=[target_path, sample_path], img_size=args.img_size,
                                         batch_size=args.eval_batch_size)
         print(f"FID is: {fid}")
+        send_message(f"Sample {args.sample_id}'s FID is {fid}")
         if not args.keep_eval_files:
             delete_dir(sample_path)
