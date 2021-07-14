@@ -9,10 +9,10 @@ from torch.backends import cudnn
 from utils.file import prepare_dirs, list_sub_folders
 
 
-def send_message(message):
+def send_message(message, exp_id=""):
     url = os.environ.get('MESSAGE_PUSH_URL')
     if url:
-        url = f"{url}{message}"
+        url = f"{url}?type=corp&title={exp_id}&description={message}"
         res = requests.get(url)
         if res.status_code != 200:
             print('Failed to send message.')

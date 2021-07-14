@@ -33,3 +33,16 @@ def calculate_fid(args, sample_path):
     fid_mean = sum(fid_list) / len(fid_list)
     write_record(f"FID mean: {fid_mean}", args.record_file)
     return fid_mean
+
+
+@torch.no_grad()
+def calculate_total_fid(nets_ema, args, eval_id):
+    target_path = args.eval_path
+    sample_path = os.path.join(args.sample_dir, str(eval_id))
+    generate_samples(nets_ema, args, sample_path)
+    fid = calculate_fid_given_paths(paths=[target_path, sample_path],
+                                    img_size=args.img_size,
+                                    batch_size=args.eval_batch_size)
+    if not args.keep_eval_files:
+        delete_dir(sample_path)
+    return fid

@@ -13,7 +13,7 @@ from solver.utils import he_init, moving_average
 from solver.misc import translate_using_latent, generate_samples
 from solver.loss import compute_g_loss, compute_d_loss
 from data.fetcher import Fetcher
-from metrics.eval import calculate_metrics
+from metrics.eval import calculate_metrics, calculate_total_fid
 from metrics.fid import calculate_fid_given_paths
 
 
@@ -155,8 +155,10 @@ class Solver:
                 self.save_model(step)
 
             if step % args.eval_every == 0:
-                fid = calculate_metrics(nets, args, step)
-                send_message(f"step: {step} fid {fid}")
+                fid = calculate_total_fid(nets_ema, args, f"step_{step}")
+                info = f"step: {step} fid: {fid}"
+                send_message(info, args.exp_id)
+                write_record(info, args.record_file)
         send_message("Model training completed.")
 
     @torch.no_grad()
