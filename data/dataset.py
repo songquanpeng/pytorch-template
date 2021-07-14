@@ -24,6 +24,46 @@ class DefaultDataset(data.Dataset):
         return len(self.samples)
 
 
+class FolderDataset(data.Dataset):
+    """ torchvision.datasets.ImageFolder with in memory option """
+
+    def __init__(self, root, transform=None, in_memory=False):
+        self.transform = transform
+        self.in_memory = in_memory
+        self.samples = []
+        self.targets = []
+        self.classes = list_sub_folders(root)
+        if in_memory:
+            print("Loading dataset into memory...", end=' ')
+        for i, class_ in enumerate(self.classes):
+            filenames = list_all_images(class_)
+            if in_memory:
+                class_samples = []
+                for filename in filenames:
+                    class_samples.append(self.load_image(filename))
+            else:
+                class_samples = filenames
+            self.targets.extend([i] * len(class_samples))
+            self.samples.extend(class_samples)
+        if in_memory:
+            print("Done.")
+
+    def load_image(self, path):
+        img = Image.open(path).convert('RGB')
+        if self.transform is not None:
+            img = self.transform(img)
+        return img
+
+    def __getitem__(self, index):
+        if self.in_memory:
+            return self.samples[index], self.targets[index]
+        else:
+            return self.load_image(self.samples[index]), self.targets[index]
+
+    def __len__(self):
+        return len(self.samples)
+
+
 class NpzDataset(data.Dataset):
     """
     Sometimes we need more information, not only image and its corresponding label.
