@@ -8,17 +8,28 @@ from utils.file import list_all_images, list_sub_folders
 class DefaultDataset(data.Dataset):
     """ No label. """
 
-    def __init__(self, root, transform=None):
+    def __init__(self, root, transform=None, in_memory=False):
         self.samples = list_all_images(root)
         self.samples.sort()
         self.transform = transform
+        self.in_memory = in_memory
+        if in_memory:
+            print("Loading dataset into memory...", end=' ')
+            for i, path in enumerate(self.samples):
+                self.samples[i] = self.load_image(path)
+            print('Done.')
 
-    def __getitem__(self, index):
-        fname = self.samples[index]
-        img = Image.open(fname).convert('RGB')
+    def load_image(self, path):
+        img = Image.open(path).convert('RGB')
         if self.transform is not None:
             img = self.transform(img)
         return img
+
+    def __getitem__(self, index):
+        if self.in_memory:
+            return self.samples[index]
+        else:
+            return self.load_image(self.samples[index])
 
     def __len__(self):
         return len(self.samples)

@@ -1,12 +1,13 @@
 from munch import Munch
 from config import load_cfg, save_cfg, print_cfg
-from utils.misc import basic_setup
+from utils.misc import setup, validate
 from solver.solver import Solver
 from data.loader import get_train_loader, get_test_loader
 
 
 def main(args):
-    basic_setup(args)
+    setup(args)
+    validate(args)
     solver = Solver(args)
     if args.mode == 'train':
         loaders = Munch(train=get_train_loader(**args), test=get_test_loader(**args))
