@@ -56,3 +56,14 @@ def delete_dir(path):
 
 def copy(file, src, dst):
     shutil.copyfile(os.path.join(src, file), os.path.join(dst, file))
+
+
+def delete_model(model_dir, step):
+    if step == 0:
+        return
+    files = glob.glob(os.path.join(model_dir, f"{step:06d}*.ckpt"))
+    try:
+        for file in files:
+            os.remove(file)
+    except:
+        print("Failed to delete old models.")

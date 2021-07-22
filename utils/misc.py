@@ -49,6 +49,7 @@ def setup(args):
 
 
 def validate(args):
+    assert args.eval_every % args.save_every == 0
     assert args.num_domains == len(list_sub_folders(args.test_path, full_path=False))
 
 

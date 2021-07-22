@@ -7,7 +7,7 @@ from munch import Munch
 from utils.checkpoint import CheckpointIO
 from utils.misc import get_datetime, send_message
 from utils.model import print_network
-from utils.file import delete_dir, write_record
+from utils.file import delete_dir, write_record, delete_model
 from models.build import build_model
 from solver.utils import he_init, moving_average
 from solver.misc import translate_using_latent, generate_samples
@@ -98,6 +98,8 @@ class Solver:
         else:
             self.initialize_parameters()
 
+        best_fid = 10000
+        best_step = 0
         print('Start training...')
         start_time = time.time()
         for step in range(args.start_iter + 1, args.end_iter + 1):
@@ -153,10 +155,18 @@ class Solver:
 
             if step % args.save_every == 0:
                 self.save_model(step)
+                last_step = step - args.save_every
+                if last_step != best_step and not args.keep_all_models:
+                    delete_model(args.model_dir, last_step)
 
             if step % args.eval_every == 0:
                 fid = calculate_total_fid(nets_ema, args, f"step_{step}")
-                info = f"step: {step} fid: {fid}"
+                if fid < best_fid:
+                    if not args.keep_all_models:
+                        delete_model(args.model_dir, best_step)
+                    best_fid = fid
+                    best_step = step
+                info = f"step: {step} current fid: {fid} history best fid: {best_fid}"
                 send_message(info, args.exp_id)
                 write_record(info, args.record_file)
         send_message("Model training completed.")

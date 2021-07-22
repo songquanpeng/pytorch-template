@@ -114,5 +114,6 @@ def parse_args():
     # Others
     parser.add_argument('--seed', type=int, default=0, help='Seed for random number generator.')
     parser.add_argument('--cudnn_benchmark', type=str2bool, default=True)
+    parser.add_argument('--keep_all_models', type=str2bool, default=False)
 
     return parser.parse_args()
