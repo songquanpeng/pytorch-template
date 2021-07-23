@@ -67,10 +67,11 @@ def calculate_fid_given_paths(paths, img_size, batch_size):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--paths', type=str, nargs=2, help='paths to real and fake images')
-    parser.add_argument('--img_size', type=int, default=128, help='image resolution')
+    parser.add_argument('--img_size', type=int, default=256, help='image resolution')
     parser.add_argument('--batch_size', type=int, default=64, help='batch size to use')
-    parser.add_argument('--dataset', type=str, required=True)
+    parser.add_argument('--dataset', type=str, default='CelebA')
     args = parser.parse_args()
+    print(args.__dict__)
     fid_value = calculate_fid_given_paths(args.paths, args.img_size, args.batch_size)
     print('FID: ', fid_value)
     with open('./fid.csv', 'a') as f:
