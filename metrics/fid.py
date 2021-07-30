@@ -8,6 +8,8 @@ from scipy import linalg
 from tqdm import tqdm
 from torchvision import models
 from data.loader import get_eval_loader
+from utils.file import load_cache, save_cache, exist_cache, safe_filename
+from utils.misc import str2bool
 
 
 class InceptionV3(nn.Module):
@@ -46,21 +48,40 @@ def frechet_distance(mu, cov, mu2, cov2):
 
 
 @torch.no_grad()
-def calculate_fid_given_paths(paths, img_size, batch_size):
-    print('Calculating FID for given paths %s and %s...' % (paths[0], paths[1]))
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    inception = InceptionV3().eval().to(device)
-    loaders = [get_eval_loader(path, img_size, batch_size) for path in paths]
-    mu, cov = [], []
-    for loader in loaders:
+def get_fid_mu_cov(inception, path, img_size, batch_size, device, use_cache=False):
+    cache_name = safe_filename(path, 'fid')
+    cache_available = use_cache and exist_cache(cache_name)
+    if cache_available:
+        print('Loading cache...')
+        cache = load_cache(cache_name)
+        mu = cache['mu']
+        cov = cache['cov']
+        print('Cache loaded.')
+    else:
+        loader = get_eval_loader(path, img_size, batch_size)
         activations = []
         for x in tqdm(loader, total=len(loader)):
             activation = inception(x.to(device))
             activations.append(activation)
         activations = torch.cat(activations, dim=0).cpu().detach().numpy()
-        mu.append(np.mean(activations, axis=0))
-        cov.append(np.cov(activations, rowvar=False))
-    res = frechet_distance(mu[0], cov[0], mu[1], cov[1])
+        mu = np.mean(activations, axis=0)
+        cov = np.cov(activations, rowvar=False)
+
+        if use_cache and not exist_cache(cache_name):
+            print('Saving cache...')
+            cache = {'mu': mu, 'cov': cov}
+            save_cache(cache, cache_name)
+    return mu, cov
+
+
+@torch.no_grad()
+def calculate_fid_given_paths(paths, img_size, batch_size, use_cache=True):
+    print('Calculating FID for given paths %s and %s...' % (paths[0], paths[1]))
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    inception = InceptionV3().eval().to(device)
+    mu1, cov1 = get_fid_mu_cov(inception, paths[0], img_size, batch_size, device, use_cache=use_cache)
+    mu2, cov2 = get_fid_mu_cov(inception, paths[1], img_size, batch_size, device, use_cache=False)
+    res = frechet_distance(mu1, cov1, mu2, cov2)
     return res
 
 
@@ -70,9 +91,10 @@ if __name__ == '__main__':
     parser.add_argument('--img_size', type=int, default=256, help='image resolution')
     parser.add_argument('--batch_size', type=int, default=64, help='batch size to use')
     parser.add_argument('--dataset', type=str, default='CelebA')
+    parser.add_argument('--use_cache', type=str2bool, default=True)
     args = parser.parse_args()
     print(args.__dict__)
-    fid_value = calculate_fid_given_paths(args.paths, args.img_size, args.batch_size)
+    fid_value = calculate_fid_given_paths(args.paths, args.img_size, args.batch_size, use_cache=args.use_cache)
     print('FID: ', fid_value)
     with open('./fid.csv', 'a') as f:
         f.write(f"{fid_value},{args.paths[0]},{args.paths[1]}\n")

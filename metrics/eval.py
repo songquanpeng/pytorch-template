@@ -27,7 +27,7 @@ def calculate_fid(args, sample_path):
             path_fake = os.path.join(sample_path, task)
             print(f'Calculating FID for {task}...')
             fid = calculate_fid_given_paths(paths=[path_real, path_fake], img_size=args.img_size,
-                                            batch_size=args.eval_batch_size)
+                                            batch_size=args.eval_batch_size, use_cache=args.eval_cache)
             fid_list.append(fid)
             write_record(f"FID for {task}: {fid}", args.record_file)
     fid_mean = sum(fid_list) / len(fid_list)
@@ -42,7 +42,8 @@ def calculate_total_fid(nets_ema, args, eval_id):
     generate_samples(nets_ema, args, sample_path)
     fid = calculate_fid_given_paths(paths=[target_path, sample_path],
                                     img_size=args.img_size,
-                                    batch_size=args.eval_batch_size)
+                                    batch_size=args.eval_batch_size,
+                                    use_cache=args.eval_cache)
     if not args.keep_eval_files:
         delete_dir(sample_path)
     return fid

@@ -41,7 +41,7 @@ def prepare_dirs(dirs):
 
 def save_json(target_path, config, filename='config'):
     with open(os.path.join(target_path, f"{filename}.json"), 'w') as f:
-        print(json.dumps(config.__dict__, sort_keys=True, indent=4), file=f)
+        print(json.dumps(config.__dict__, sort_keys=True, indent=4, ensure_ascii=False), file=f)
 
 
 def write_record(record, file_path, print_screen=True):
@@ -93,7 +93,7 @@ def exist_cache(name):
 
 def safe_filename(unsafe, mark=''):
     if mark:
-        unsafe += "__" + mark
+        unsafe = mark + "__" + unsafe
     unsafe = unsafe.replace('\\', '_')
     unsafe = unsafe.replace('/', '_')
     safe = unsafe.replace(':', '_')
