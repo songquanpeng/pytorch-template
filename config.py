@@ -89,6 +89,9 @@ def parse_args():
     parser.add_argument('--eval_batch_size', type=int, default=32)
     parser.add_argument('--test_path', type=str, required=True)
     parser.add_argument('--eval_path', type=str, required=True, help="compare with those images")
+    parser.add_argument('--eval_cache', type=str2bool, default=True, help="Cache what can be safely cached")
+    parser.add_argument('--selected_path', type=str, required=False,
+                        help="Every time we sample, we will translate the images in this path")
 
     # Optimizing related arguments.
     parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate for generator.")

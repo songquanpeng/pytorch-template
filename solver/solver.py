@@ -91,6 +91,10 @@ class Solver:
         # Those fixed samples are used to show the trend.
         fixed_train_sample = next(train_fetcher)
         fixed_test_sample = next(test_fetcher)
+        if args.selected_path:
+            # actually we don't care y
+            fixed_selected_samples = next(iter(loaders.selected))
+            fixed_selected_samples = fixed_selected_samples.to(self.device)
 
         # Load or initialize the model parameters.
         if args.start_iter > 0:
@@ -152,6 +156,9 @@ class Solver:
                                        os.path.join(args.sample_dir, f"latent_test_{step}.jpg"))
                 translate_using_latent(nets, args, fixed_train_sample.x, y_trg_list, z_trg_list,
                                        os.path.join(args.sample_dir, f"latent_train_{step}.jpg"))
+                if args.selected_path:
+                    translate_using_latent(nets, args, fixed_selected_samples, y_trg_list, z_trg_list,
+                                           os.path.join(args.sample_dir, f"latent_selected_{step}.jpg"))
 
             if step % args.save_every == 0:
                 self.save_model(step)
