@@ -51,6 +51,8 @@ def setup(args):
 def validate(args):
     assert args.eval_every % args.save_every == 0
     assert args.num_domains == len(list_sub_folders(args.test_path, full_path=False))
+    if args.cache_dataset:
+        assert args.preload_dataset, "Use cached dataset requires you enable preloading dataset!"
 
 
 def get_commit_hash():

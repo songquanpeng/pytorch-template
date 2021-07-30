@@ -2,6 +2,7 @@ import os
 import glob
 import json
 import shutil
+import pickle
 
 
 def list_all_images(path, full_path=True):
@@ -67,3 +68,33 @@ def delete_model(model_dir, step):
             os.remove(file)
     except:
         print("Failed to delete old models.")
+
+
+cache_dir = 'archive/cache'
+
+
+def save_cache(data, name):
+    os.makedirs(cache_dir, exist_ok=True)
+    try:
+        with open(os.path.join(cache_dir, name), 'wb') as f:
+            pickle.dump(data, f)
+    except:
+        print(f"Failed to save cache: {name}")
+
+
+def load_cache(name):
+    with open(os.path.join(cache_dir, name), 'rb') as f:
+        return pickle.load(f)
+
+
+def exist_cache(name):
+    return os.path.exists(os.path.join(cache_dir, name))
+
+
+def safe_filename(unsafe, mark=''):
+    if mark:
+        unsafe += "__" + mark
+    unsafe = unsafe.replace('\\', '_')
+    unsafe = unsafe.replace('/', '_')
+    safe = unsafe.replace(':', '_')
+    return safe
