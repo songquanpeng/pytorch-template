@@ -36,6 +36,8 @@ def setup(args):
     np.random.seed(args.seed)
     random.seed(args.seed)
 
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
     args.log_dir = os.path.join(args.exp_dir, args.exp_id, "logs")
     args.sample_dir = os.path.join(args.exp_dir, args.exp_id, "samples")
     args.model_dir = os.path.join(args.exp_dir, args.exp_id, "models")
