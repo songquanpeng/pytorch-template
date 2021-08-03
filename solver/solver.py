@@ -148,8 +148,8 @@ class Solver:
                         self.logger.scalar_summary(tag, value, step)
 
             if step % args.sample_every == 0:
-                N = args.batch_size
                 repeat_num = 2
+                N = args.batch_size
                 y_trg_list = [torch.tensor(y).repeat(N).to(self.device) for y in range(min(args.num_domains, 5))]
                 z_trg_list = torch.randn(repeat_num, 1, args.latent_dim).repeat(1, N, 1).to(self.device)
                 translate_using_latent(nets, args, fixed_test_sample.x, y_trg_list, z_trg_list,
@@ -157,6 +157,9 @@ class Solver:
                 translate_using_latent(nets, args, fixed_train_sample.x, y_trg_list, z_trg_list,
                                        os.path.join(args.sample_dir, f"latent_train_{step}.jpg"))
                 if args.selected_path:
+                    N = fixed_selected_samples.shape[0]
+                    y_trg_list = [torch.tensor(y).repeat(N).to(self.device) for y in range(min(args.num_domains, 5))]
+                    z_trg_list = torch.randn(repeat_num, 1, args.latent_dim).repeat(1, N, 1).to(self.device)
                     translate_using_latent(nets, args, fixed_selected_samples, y_trg_list, z_trg_list,
                                            os.path.join(args.sample_dir, f"latent_selected_{step}.jpg"))
 
