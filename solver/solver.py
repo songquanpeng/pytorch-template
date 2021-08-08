@@ -176,7 +176,7 @@ class Solver:
                         delete_model(args.model_dir, best_step)
                     best_fid = fid
                     best_step = step
-                info = f"step: {step:.2f} current fid: {fid:.2f} history best fid: {best_fid:.2f}"
+                info = f"step: {step} current fid: {fid:.2f} history best fid: {best_fid:.2f}"
                 send_message(info, args.exp_id)
                 write_record(info, args.record_file)
         send_message("Model training completed.")

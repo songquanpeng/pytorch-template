@@ -88,7 +88,8 @@ def get_eval_loader(path, img_size, batch_size, dataset=None, num_workers=4, **k
                            batch_size=batch_size,
                            shuffle=True,
                            num_workers=num_workers,
-                           pin_memory=True)
+                           pin_memory=True,
+                           drop_last=True)
 
 
 def get_selected_loader(selected_path, img_size, dataset=None, num_workers=0, **kwargs):
