@@ -73,7 +73,7 @@ def parse_args():
     # Training related arguments
     parser.add_argument('--parameter_init', type=str, default='he', choices=['he', 'default'])
     parser.add_argument('--start_iter', type=int, default=0)
-    parser.add_argument('--end_iter', type=int, default=200000)
+    parser.add_argument('--end_iter', type=int, default=100000)
     parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--train_path', type=str, required=True)
     parser.add_argument('--num_domains', type=int)
@@ -99,7 +99,7 @@ def parse_args():
     parser.add_argument('--beta1', type=float, default=0.0)
     parser.add_argument('--beta2', type=float, default=0.99)
     parser.add_argument('--weight_decay', type=float, default=1e-4)
-    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--ema_beta', type=float, default=0.999)
 
     # Loss hyper arguments.

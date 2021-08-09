@@ -48,6 +48,9 @@ def setup(args):
 
     args.domains = list_sub_folders(args.train_path, full_path=False)
     args.num_domains = len(args.domains)
+    if os.name == 'nt' and args.num_workers != 0:
+        print("Reset num_workers = 0 because you are running on Windows system.")
+        args.num_workers = 0
 
 
 def validate(args):
