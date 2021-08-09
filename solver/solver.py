@@ -148,20 +148,27 @@ class Solver:
                         self.logger.scalar_summary(tag, value, step)
 
             if step % args.sample_every == 0:
-                repeat_num = 2
-                N = args.batch_size
-                y_trg_list = [torch.tensor(y).repeat(N).to(self.device) for y in range(min(args.num_domains, 5))]
-                z_trg_list = torch.randn(repeat_num, 1, args.latent_dim).repeat(1, N, 1).to(self.device)
-                translate_using_latent(nets, args, fixed_test_sample.x, y_trg_list, z_trg_list,
-                                       os.path.join(args.sample_dir, f"latent_test_{step}.jpg"))
-                translate_using_latent(nets, args, fixed_train_sample.x, y_trg_list, z_trg_list,
-                                       os.path.join(args.sample_dir, f"latent_train_{step}.jpg"))
-                if args.selected_path:
-                    N = fixed_selected_samples.shape[0]
+                def training_sampler(which_nets, sample_prefix=""):
+                    repeat_num = 2
+                    N = args.batch_size
                     y_trg_list = [torch.tensor(y).repeat(N).to(self.device) for y in range(min(args.num_domains, 5))]
                     z_trg_list = torch.randn(repeat_num, 1, args.latent_dim).repeat(1, N, 1).to(self.device)
-                    translate_using_latent(nets, args, fixed_selected_samples, y_trg_list, z_trg_list,
-                                           os.path.join(args.sample_dir, f"latent_selected_{step}.jpg"))
+                    translate_using_latent(which_nets, args, fixed_test_sample.x, y_trg_list, z_trg_list,
+                                           os.path.join(args.sample_dir, f"{sample_prefix}latent_test_{step}.jpg"))
+                    translate_using_latent(which_nets, args, fixed_train_sample.x, y_trg_list, z_trg_list,
+                                           os.path.join(args.sample_dir, f"{sample_prefix}latent_train_{step}.jpg"))
+                    if args.selected_path:
+                        N = fixed_selected_samples.shape[0]
+                        y_trg_list = [torch.tensor(y).repeat(N).to(self.device) for y in
+                                      range(min(args.num_domains, 5))]
+                        z_trg_list = torch.randn(repeat_num, 1, args.latent_dim).repeat(1, N, 1).to(self.device)
+                        translate_using_latent(which_nets, args, fixed_selected_samples, y_trg_list, z_trg_list,
+                                               os.path.join(args.sample_dir,
+                                                            f"{sample_prefix}latent_selected_{step}.jpg"))
+
+                training_sampler(nets_ema, 'ema_')
+                if args.sample_non_ema:
+                    training_sampler(nets)
 
             if step % args.save_every == 0:
                 self.save_model(step)

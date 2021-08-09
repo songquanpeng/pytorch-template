@@ -81,6 +81,8 @@ def parse_args():
 
     # Sampling related arguments
     parser.add_argument('--sample_id', type=str)
+    parser.add_argument('--sample_non_ema', type=str2bool, default=True,
+                        help='Whether we use the non-ema version model to sample?')
 
     # Evaluation related arguments
     parser.add_argument('--eval_iter', type=int, default=0, help='Use which iter to evaluate.')
