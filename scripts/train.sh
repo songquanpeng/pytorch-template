@@ -1,7 +1,8 @@
 #!/bin/bash
+filename=$(basename "$0");exp_id="${filename%.*}"
 CUDA_VISIBLE_DEVICES=0 python main.py \
+--exp_id "$exp_id" \
 --about "" \
---exp_id "exp-1" \
 --mode train \
 --start_iter 0 --end_iter 100000 \
 --preload_dataset true --cache_dataset true \
