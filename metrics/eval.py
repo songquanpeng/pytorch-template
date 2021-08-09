@@ -2,16 +2,16 @@ import torch
 import os
 from solver.misc import generate_samples
 from metrics.fid import calculate_fid_given_paths
-from utils.file import write_record, delete_dir
+from utils.file import write_record, delete_dir, get_sample_path
 
 
 @torch.no_grad()
-def calculate_metrics(nets, args, step):
+def calculate_metrics(nets, args, step, keep_samples=False):
     write_record(f"Calculating metrics for step {step}...", args.record_file)
-    sample_path = os.path.join(args.eval_dir, f"step_{step}")
+    sample_path = get_sample_path(args.eval_dir, step)
     generate_samples(nets, args, sample_path)
     fid = calculate_fid(args, sample_path)
-    if not args.keep_eval_files:
+    if not keep_samples:
         delete_dir(sample_path)
     return fid
 
@@ -36,14 +36,14 @@ def calculate_fid(args, sample_path):
 
 
 @torch.no_grad()
-def calculate_total_fid(nets_ema, args, eval_id):
+def calculate_total_fid(nets_ema, args, step, keep_samples=False):
     target_path = args.eval_path
-    sample_path = os.path.join(args.sample_dir, str(eval_id))
+    sample_path = get_sample_path(args.eval_dir, step)
     generate_samples(nets_ema, args, sample_path)
     fid = calculate_fid_given_paths(paths=[target_path, sample_path],
                                     img_size=args.img_size,
                                     batch_size=args.eval_batch_size,
                                     use_cache=args.eval_cache)
-    if not args.keep_eval_files:
+    if not keep_samples:
         delete_dir(sample_path)
     return fid

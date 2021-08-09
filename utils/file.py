@@ -52,7 +52,12 @@ def write_record(record, file_path, print_screen=True):
 
 
 def delete_dir(path):
-    shutil.rmtree(path)
+    if path is None:
+        return
+    try:
+        shutil.rmtree(path)
+    except:
+        print(f"Failed to delete dir:{path}")
 
 
 def copy(file, src, dst):
@@ -68,6 +73,20 @@ def delete_model(model_dir, step):
             os.remove(file)
     except:
         print("Failed to delete old models.")
+
+
+def get_sample_path(sample_dir, sample_id):
+    return os.path.join(sample_dir, f"sample_{str(sample_id)}")
+
+
+def delete_sample(sample_dir, eval_id):
+    if not eval_id:
+        return
+    sample_path = get_sample_path(sample_dir, eval_id)
+    try:
+        shutil.rmtree(sample_path)
+    except:
+        print(f"Failed to delete dir: {sample_path}")
 
 
 cache_dir = 'archive/cache'

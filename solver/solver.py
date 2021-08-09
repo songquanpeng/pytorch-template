@@ -7,7 +7,7 @@ from munch import Munch
 from utils.checkpoint import CheckpointIO
 from utils.misc import get_datetime, send_message
 from utils.model import print_network
-from utils.file import delete_dir, write_record, delete_model
+from utils.file import delete_dir, write_record, delete_model, list_all_images, delete_sample
 from models.build import build_model
 from solver.utils import he_init, moving_average
 from solver.misc import translate_using_latent, generate_samples
@@ -177,16 +177,25 @@ class Solver:
                     delete_model(args.model_dir, last_step)
 
             if step % args.eval_every == 0:
-                fid = calculate_total_fid(nets_ema, args, f"step_{step}")
+                fid = calculate_total_fid(nets_ema, args, step, keep_samples=True)
                 if fid < best_fid:
+                    # New best model existed, delete old best model's weights and samples.
                     if not args.keep_all_models:
                         delete_model(args.model_dir, best_step)
+                    if not args.keep_all_eval_samples:
+                        delete_sample(args.eval_dir, best_step)
                     best_fid = fid
                     best_step = step
+                else:
+                    # Otherwise just delete the samples.
+                    if not args.keep_all_eval_samples:
+                        delete_sample(args.eval_dir, step)
                 info = f"step: {step} current fid: {fid:.2f} history best fid: {best_fid:.2f}"
                 send_message(info, args.exp_id)
                 write_record(info, args.record_file)
         send_message("Model training completed.")
+        if not args.keep_best_eval_samples:
+            delete_sample(args.eval_dir, best_step)
 
     @torch.no_grad()
     def sample(self):
@@ -210,5 +219,5 @@ class Solver:
                                         batch_size=args.eval_batch_size)
         print(f"FID is: {fid}")
         send_message(f"Sample {args.sample_id}'s FID is {fid}")
-        if not args.keep_eval_files:
+        if not args.keep_all_eval_samples:
             delete_dir(sample_path)
