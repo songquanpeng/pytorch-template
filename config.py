@@ -42,6 +42,10 @@ def setup_cfg(args):
     args.domains = list_sub_folders(args.train_path, full_path=False)
     args.num_domains = len(args.domains)
 
+    if args.cache_dataset:
+        print("Warning: reset preload_dataset = True, because cache_dataset option enabled.")
+        args.preload_dataset = True
+
 
 def validate_cfg(args):
     assert args.eval_every % args.save_every == 0
