@@ -3,9 +3,51 @@ import sys
 import json
 import os
 import argparse
+import random
+import numpy as np
+from torch.backends import cudnn
+from utils.file import prepare_dirs, list_sub_folders
 from munch import Munch
 from utils.misc import get_datetime, str2bool, get_commit_hash
 from utils.file import save_json
+
+
+def setup_cfg(args):
+    cudnn.benchmark = args.cudnn_benchmark
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
+    random.seed(args.seed)
+
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+    if args.debug:
+        print("Warning: running in debug mode, some settings will be override.")
+        args.exp_id = "debug"
+        args.sample_every = 10
+        args.eval_every = 20
+        args.save_every = 20
+        args.end_iter = args.start_iter + 60
+    if os.name == 'nt' and args.num_workers != 0:
+        print("Warning: reset num_workers = 0, because running on a Windows system.")
+        args.num_workers = 0
+
+    args.log_dir = os.path.join(args.exp_dir, args.exp_id, "logs")
+    args.sample_dir = os.path.join(args.exp_dir, args.exp_id, "samples")
+    args.model_dir = os.path.join(args.exp_dir, args.exp_id, "models")
+    args.eval_dir = os.path.join(args.exp_dir, args.exp_id, "eval")
+    prepare_dirs([args.log_dir, args.sample_dir, args.model_dir, args.eval_dir])
+    args.record_file = os.path.join(args.exp_dir, args.exp_id, "records.txt")
+    args.loss_file = os.path.join(args.exp_dir, args.exp_id, "losses.csv")
+
+    args.domains = list_sub_folders(args.train_path, full_path=False)
+    args.num_domains = len(args.domains)
+
+
+def validate_cfg(args):
+    assert args.eval_every % args.save_every == 0
+    assert args.num_domains == len(list_sub_folders(args.test_path, full_path=False))
+    if args.cache_dataset:
+        assert args.preload_dataset, "Use cached dataset requires you enable preloading dataset!"
 
 
 def load_cfg():
