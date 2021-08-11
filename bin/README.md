@@ -1,9 +1,9 @@
 # Bin Sub-folder
 > This folder is used to save executable utils.
 
-## demo.py
-This is a demo script.
+## template.py
+This is a template script.
 
-Run: `demo.py --parameter demo`
+Run: `template.py --parameter template`
 
 Commit: `4e45c9`
