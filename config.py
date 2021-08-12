@@ -168,5 +168,7 @@ def parse_args():
     parser.add_argument('--seed', type=int, default=0, help='Seed for random number generator.')
     parser.add_argument('--cudnn_benchmark', type=str2bool, default=True)
     parser.add_argument('--keep_all_models', type=str2bool, default=False)
+    parser.add_argument('--pretrained_models', type=str, nargs='+', default=[],
+                        help='The name list of the pretrained models that you used.')
 
     return parser.parse_args()

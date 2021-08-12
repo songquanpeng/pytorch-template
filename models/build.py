@@ -4,6 +4,8 @@ from models.generator import Generator
 from models.discriminator import Discriminator
 from models.mapping_network import MappingNetwork
 
+# If you use pretrained models here, make sure they are using the `eval` mode.
+
 
 def build_model(args):
     generator = Generator(args)

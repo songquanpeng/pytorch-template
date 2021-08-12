@@ -55,13 +55,23 @@ class Solver:
     def initialize_parameters(self):
         if self.args.parameter_init == 'he':
             for name, network in self.nets.items():
-                if 'ema' not in name:
+                if name not in self.args.pretrained_models:
                     print('Initializing %s...' % name, end=' ')
                     network.apply(he_init)
                     print('Done.')
         elif self.args.parameter_init == 'default':
             # Do nothing because the parameters has been initialized in this manner.
             pass
+
+    def train_mode(self, training=True):
+        for nets in [self.nets, self.nets_ema]:
+            for name, network in nets.items():
+                # We don't care the pretrained models, they should be set to eval() when loading.
+                if name not in self.args.pretrained_models:
+                    network.train(mode=training)
+
+    def eval_mode(self):
+        self.train_mode(training=False)
 
     def save_model(self, step):
         for ckptio in self.ckptios:
@@ -107,6 +117,7 @@ class Solver:
         print('Start training...')
         start_time = time.time()
         for step in range(args.start_iter + 1, args.end_iter + 1):
+            self.train_mode()
             sample_org = next(train_fetcher)  # sample that to be translated
             sample_ref = next(train_fetcher)  # reference samples
 
@@ -126,6 +137,8 @@ class Solver:
             # Update generator_ema
             moving_average(nets.generator, nets_ema.generator, beta=args.ema_beta)
             moving_average(nets.mapping_network, nets_ema.mapping_network, beta=args.ema_beta)
+
+            self.eval_mode()
 
             if step % args.log_every == 0:
                 elapsed = time.time() - start_time
