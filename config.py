@@ -82,7 +82,7 @@ def save_cfg(cfg):
     os.makedirs(exp_path, exist_ok=True)
     filename = cfg.mode
     if cfg.mode == 'train' and cfg.start_iter != 0:
-        filename = "resume"
+        filename = f"resume_{cfg.start_iter}"
     save_json(exp_path, cfg, filename)
 
 
