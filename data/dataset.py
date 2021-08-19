@@ -1,7 +1,9 @@
 import os
+
 import numpy as np
-from torch.utils import data
 from PIL import Image
+from torch.utils import data
+
 from utils.file import list_all_images, list_sub_folders, exist_cache, load_cache, save_cache, safe_filename
 
 

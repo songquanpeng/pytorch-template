@@ -1,20 +1,21 @@
-import torch
+import datetime
 import os
 import time
-import datetime
 
+import torch
 from munch import Munch
+
+from data.fetcher import Fetcher
+from metrics.eval import calculate_total_fid
+from metrics.fid import calculate_fid_given_paths
+from models.build import build_model
+from solver.loss import compute_g_loss, compute_d_loss
+from solver.misc import translate_using_latent, generate_samples
+from solver.utils import he_init, moving_average
 from utils.checkpoint import CheckpointIO
+from utils.file import delete_dir, write_record, delete_model, delete_sample
 from utils.misc import get_datetime, send_message
 from utils.model import print_network
-from utils.file import delete_dir, write_record, delete_model, list_all_images, delete_sample
-from models.build import build_model
-from solver.utils import he_init, moving_average
-from solver.misc import translate_using_latent, generate_samples
-from solver.loss import compute_g_loss, compute_d_loss
-from data.fetcher import Fetcher
-from metrics.eval import calculate_metrics, calculate_total_fid
-from metrics.fid import calculate_fid_given_paths
 
 
 class Solver:
@@ -206,7 +207,7 @@ class Solver:
                 info = f"step: {step} current fid: {fid:.2f} history best fid: {best_fid:.2f}"
                 send_message(info, args.exp_id)
                 write_record(info, args.record_file)
-        send_message("Model training completed.")
+        send_message("Model training completed.", args.exp_id)
         if not args.keep_best_eval_samples:
             delete_sample(args.eval_dir, best_step)
 

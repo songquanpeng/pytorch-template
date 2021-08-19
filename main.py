@@ -1,7 +1,8 @@
 from munch import Munch
+
 from config import setup_cfg, validate_cfg, load_cfg, save_cfg, print_cfg
-from solver.solver import Solver
 from data.loader import get_train_loader, get_test_loader, get_selected_loader
+from solver.solver import Solver
 
 
 def main(args):

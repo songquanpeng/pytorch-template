@@ -1,8 +1,8 @@
-import os
 import glob
 import json
-import shutil
+import os
 import pickle
+import shutil
 
 
 def list_all_images(path, full_path=True):

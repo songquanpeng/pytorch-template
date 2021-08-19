@@ -1,12 +1,12 @@
+import argparse
+
+import numpy as np
 import torch
 import torch.nn as nn
-import argparse
-import numpy as np
-import copy
-from munch import Munch
 from scipy import linalg
-from tqdm import tqdm
 from torchvision import models
+from tqdm import tqdm
+
 from data.loader import get_eval_loader
 from utils.file import load_cache, save_cache, exist_cache, safe_filename
 from utils.misc import str2bool

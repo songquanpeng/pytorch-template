@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-from utils.image import save_image
 
 
 def he_init(module):

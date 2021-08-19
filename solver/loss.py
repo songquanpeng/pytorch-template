@@ -1,6 +1,6 @@
 import torch
-from munch import Munch
 import torch.nn.functional as F
+from munch import Munch
 
 
 def compute_d_loss(nets, args, sample_org, sample_ref):

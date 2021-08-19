@@ -1,15 +1,17 @@
-import torch
-import sys
+import argparse
 import json
 import os
-import argparse
 import random
+import sys
+
 import numpy as np
-from torch.backends import cudnn
-from utils.file import prepare_dirs, list_sub_folders
+import torch
 from munch import Munch
-from utils.misc import get_datetime, str2bool, get_commit_hash
+from torch.backends import cudnn
+
+from utils.file import prepare_dirs, list_sub_folders
 from utils.file import save_json
+from utils.misc import get_datetime, str2bool, get_commit_hash
 
 
 def setup_cfg(args):

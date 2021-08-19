@@ -1,7 +1,9 @@
-import torch
 import os
-from solver.misc import generate_samples
+
+import torch
+
 from metrics.fid import calculate_fid_given_paths
+from solver.misc import generate_samples
 from utils.file import write_record, delete_dir, get_sample_path
 
 

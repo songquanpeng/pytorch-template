@@ -10,4 +10,3 @@ def denormalize(x):
 def save_image(x, col_num, filename):
     x = denormalize(x)
     torchvision.utils.save_image(x.cpu(), filename, nrow=col_num, padding=0)
-

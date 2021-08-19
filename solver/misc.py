@@ -1,10 +1,12 @@
-import torch
-import os
 import copy
-from utils.image import save_image
-from data.loader import get_eval_loader
+import os
+
+import torch
 from tqdm import tqdm
+
+from data.loader import get_eval_loader
 from utils.file import make_path
+from utils.image import save_image
 
 
 @torch.no_grad()

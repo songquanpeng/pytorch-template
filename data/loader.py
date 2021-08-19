@@ -1,12 +1,10 @@
-import os
+import numpy as np
 from torch.utils import data
 from torch.utils.data.sampler import WeightedRandomSampler
 from torchvision import transforms
-from data.dataset import FolderDataset as ImageFolder
-
-import numpy as np
 
 from data.dataset import DefaultDataset
+from data.dataset import FolderDataset as ImageFolder
 from utils.file import list_all_images
 
 
