@@ -15,7 +15,7 @@ from solver.utils import he_init, moving_average
 from utils.checkpoint import CheckpointIO
 from utils.file import delete_dir, write_record, delete_model, delete_sample
 from utils.misc import get_datetime, send_message
-from utils.model import print_network
+from utils.model import count_parameters
 
 
 class Solver:
@@ -25,7 +25,7 @@ class Solver:
         self.device = torch.device(args.device)
         self.nets, self.nets_ema = build_model(args)
         for name, module in self.nets.items():
-            print_network(module, name)
+            count_parameters(module, name)
         # self.to(self.device)
         for net in self.nets.values():
             net.to(self.device)
