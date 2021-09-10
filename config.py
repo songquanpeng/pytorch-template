@@ -22,6 +22,10 @@ def setup_cfg(args):
 
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+    if args.exp_id is None:
+        args.exp_id = get_datetime()
+        # Tip: you can construct the exp_id automatically here by use the args.
+
     if args.debug:
         print("Warning: running in debug mode, some settings will be override.")
         args.exp_id = "debug"
@@ -98,7 +102,7 @@ def parse_args():
     # About this experiment.
     parser.add_argument('--about', type=str, default="")
     parser.add_argument('--hash', type=str, required=False, help="Git commit hash for this experiment.")
-    parser.add_argument('--exp_id', type=str, default=get_datetime(), help='Folder name and id for this experiment.')
+    parser.add_argument('--exp_id', type=str, help='Folder name and id for this experiment.')
     parser.add_argument('--exp_dir', type=str, default='expr')
 
     # Meta arguments.
