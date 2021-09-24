@@ -22,6 +22,12 @@ def setup_cfg(args):
 
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+    if args.mode == 'train' and torch.cuda.device_count() > 1:
+        print(f"We will train on {torch.cuda.device_count()} GPUs.")
+        args.multi_gpu = True
+    else:
+        args.multi_gpu = False
+
     if args.exp_id is None:
         args.exp_id = get_datetime()
         # Tip: you can construct the exp_id automatically here by use the args.

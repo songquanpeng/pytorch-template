@@ -3,6 +3,7 @@ import os
 import time
 
 import torch
+from torch import nn
 from munch import Munch
 
 from data.fetcher import Fetcher
@@ -26,6 +27,9 @@ class Solver:
         self.nets, self.nets_ema = build_model(args)
         for name, module in self.nets.items():
             count_parameters(module, name)
+        if args.multi_gpu:
+            for net in self.nets.keys():
+                self.nets[net] = nn.DataParallel(self.nets[net])
         # self.to(self.device)
         for net in self.nets.values():
             net.to(self.device)
@@ -42,7 +46,7 @@ class Solver:
                     betas=(args.beta1, args.beta2),
                     weight_decay=args.weight_decay)
             self.ckptios = [
-                CheckpointIO(args.model_dir + '/{:06d}_nets.ckpt', **self.nets),
+                CheckpointIO(args.model_dir + '/{:06d}_nets.ckpt', multi_gpu=args.multi_gpu, **self.nets),
                 CheckpointIO(args.model_dir + '/{:06d}_nets_ema.ckpt', **self.nets_ema),
                 CheckpointIO(args.model_dir + '/{:06d}_optims.ckpt', **self.optims)]
         else:
