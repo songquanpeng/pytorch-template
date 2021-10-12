@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import random
+import shutil
 import sys
 
 import numpy as np
@@ -50,6 +51,9 @@ def setup_cfg(args):
     prepare_dirs([args.log_dir, args.sample_dir, args.model_dir, args.eval_dir])
     args.record_file = os.path.join(args.exp_dir, args.exp_id, "records.txt")
     args.loss_file = os.path.join(args.exp_dir, args.exp_id, "losses.csv")
+
+    if os.path.exists(f'./scripts/{args.exp_id}.sh'):
+        shutil.copyfile(f'./scripts/{args.exp_id}.sh', os.path.join(args.exp_dir, args.exp_id, f'{args.exp_id}.sh'))
 
     args.domains = list_sub_folders(args.train_path, full_path=False)
     args.num_domains = len(args.domains)
