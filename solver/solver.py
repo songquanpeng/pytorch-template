@@ -40,6 +40,8 @@ class Solver:
             # Setup optimizers for all nets to learn.
             self.optims = Munch()
             for net in self.nets.keys():
+                if net in args.pretrained_models:
+                    continue
                 self.optims[net] = torch.optim.Adam(
                     params=self.nets[net].parameters(),
                     lr=args.d_lr if net == 'discriminator' else args.lr,
