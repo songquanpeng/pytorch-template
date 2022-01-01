@@ -18,8 +18,6 @@ from utils.misc import get_datetime, str2bool, get_commit_hash
 def setup_cfg(args):
     cudnn.benchmark = args.cudnn_benchmark
     torch.manual_seed(args.seed)
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed_all(args.seed)
     np.random.seed(args.seed)
     random.seed(args.seed)
 
