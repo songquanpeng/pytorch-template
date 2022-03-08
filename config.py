@@ -177,7 +177,7 @@ def parse_args():
     parser.add_argument('--eval_every', type=int, default=5000)
 
     # Log related arguments.
-    parser.add_argument('--use_tensorboard', type=str2bool, default=False)
+    parser.add_argument('--use_tensorboard', type=str2bool, default=True)
     parser.add_argument('--save_loss', type=str2bool, default=True)
 
     # Others
