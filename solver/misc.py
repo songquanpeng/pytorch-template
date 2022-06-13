@@ -3,10 +3,30 @@ import os
 
 import torch
 from tqdm import tqdm
-
+from torchvision.utils import make_grid
 from data.loader import get_eval_loader
-from utils.file import make_path
+from utils.file import make_path, safe_filename
 from utils.image import save_image
+
+
+@torch.no_grad()
+def sample_image(nets, args, logger, ref_images, trg_latents, tag, step):
+    if ref_images is not None:
+        if type(ref_images) is list:
+            x_concat = [ref_images[0]]
+        else:
+            x_concat = [ref_images]
+    else:
+        x_concat = []
+    x_fake = nets.generator(trg_latents)
+    x_concat += [x_fake]
+    if ref_images is not None and type(ref_images) is list:
+        x_concat += [ref_images[1]]
+    x_concat = torch.cat(x_concat, dim=0)
+    save_image(x_concat, trg_latents.shape[0],
+               filename=os.path.join(args.sample_dir, safe_filename(f"{tag}_{step:06}.png")))
+    x = make_grid(x_concat, trg_latents.shape[0], normalize=True)
+    logger.image_summary(tag, x, step)
 
 
 @torch.no_grad()
