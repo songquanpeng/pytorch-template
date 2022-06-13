@@ -2,6 +2,7 @@ import numpy as np
 from torch.utils import data
 from torch.utils.data.sampler import WeightedRandomSampler
 from torchvision import transforms
+from torchvision.datasets import ImageFolder
 
 from data.dataset import DefaultDataset
 from data.dataset import FolderDataset as ImageFolder
@@ -16,10 +17,6 @@ def _make_balanced_sampler(labels):
 
 
 def get_train_loader(train_path, img_size, batch_size, dataset, num_workers=4, **kwargs):
-    in_memory = kwargs['preload_dataset']
-    use_cache = kwargs['cache_dataset']
-    if in_memory:
-        num_workers = 0
     norm_mean = [0.5, 0.5, 0.5]
     norm_std = [0.5, 0.5, 0.5]
     if dataset == 'CelebA':
@@ -39,7 +36,7 @@ def get_train_loader(train_path, img_size, batch_size, dataset, num_workers=4, *
     else:
         assert False, f"Unsupported dataset: {dataset}"
 
-    dataset = ImageFolder(root=train_path, transform=transform, in_memory=in_memory, use_cache=use_cache)
+    dataset = ImageFolder(root=train_path, transform=transform)
     sampler = _make_balanced_sampler(dataset.targets)
 
     return data.DataLoader(dataset=dataset,
@@ -51,10 +48,6 @@ def get_train_loader(train_path, img_size, batch_size, dataset, num_workers=4, *
 
 
 def get_test_loader(test_path, img_size, batch_size, dataset=None, num_workers=4, **kwargs):
-    in_memory = kwargs['preload_dataset']
-    use_cache = kwargs['cache_dataset']
-    if in_memory:
-        num_workers = 0
     norm_mean = [0.5, 0.5, 0.5]
     norm_std = [0.5, 0.5, 0.5]
     transform = transforms.Compose([
@@ -62,7 +55,7 @@ def get_test_loader(test_path, img_size, batch_size, dataset=None, num_workers=4
         transforms.ToTensor(),
         transforms.Normalize(mean=norm_mean, std=norm_std),
     ])
-    dataset = ImageFolder(root=test_path, transform=transform, in_memory=in_memory, use_cache=use_cache)
+    dataset = ImageFolder(root=test_path, transform=transform)
 
     return data.DataLoader(dataset=dataset,
                            batch_size=batch_size,

@@ -6,7 +6,6 @@
 + [x] Automatically record the model version (by saving the git commit hash) for later reproduction.
 + [x] Use JSON file or command line arguments to specify arguments.
 + [x] The results of each experiment are properly stored.
-+ [x] Use the cache to speed up the model training & evaluation process.
 
 
 ## Others
