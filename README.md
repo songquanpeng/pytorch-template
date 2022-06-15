@@ -10,7 +10,6 @@
 
 ## Structures
 ```
-.
 +--- .gitignore
 +--- archive (generated files & dataset)
 |   +--- README.md
@@ -56,4 +55,4 @@
 
 ## Others
 I referred [StarGAN v2's official implementation](https://github.com/clovaai/stargan-v2) when crafting this template, 
-so don't be surprised when you see some code is similar.
+so don't be surprised if you find some code is similar.
