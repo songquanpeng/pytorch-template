@@ -118,7 +118,7 @@ def parse_args():
     parser.add_argument('--img_size', type=int, default=256)
     parser.add_argument('--latent_dim', type=int, default=16)
     parser.add_argument('--style_dim', type=int, default=64)
-    parser.add_argument('--parameter_init', type=str, default='he', choices=['he', 'default'])
+    parser.add_argument('--init_weights', type=str, default='he', choices=['he', 'default'])
 
     # Dataset related arguments.
     parser.add_argument('--dataset', type=str, required=True)

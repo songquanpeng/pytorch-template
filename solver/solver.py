@@ -59,15 +59,15 @@ class Solver:
             from utils.logger import Logger
             self.logger = Logger(args.log_dir)
 
-    def initialize_parameters(self):
-        if self.args.parameter_init == 'he':
+    def init_weights(self):
+        if self.args.init_weights == 'he':
             for name, network in self.nets.items():
                 if name not in self.args.pretrained_models:
                     print('Initializing %s...' % name, end=' ')
                     network.apply(he_init)
                     print('Done.')
-        elif self.args.parameter_init == 'default':
-            # Do nothing because the parameters has been initialized in this manner.
+        elif self.args.init_weights == 'default':
+            # Do nothing because the weights has been initialized in this manner.
             pass
 
     def train_mode(self, training=True):
@@ -117,7 +117,7 @@ class Solver:
         if args.start_iter > 0:
             self.load_model(args.start_iter)
         else:
-            self.initialize_parameters()
+            self.init_weights()
 
         best_fid = 10000
         best_step = 0
