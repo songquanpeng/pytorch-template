@@ -41,6 +41,7 @@ def get_train_loader(train_path, img_size, batch_size, dataset, num_workers=4, *
 
     return data.DataLoader(dataset=dataset,
                            batch_size=batch_size,
+                           shuffle=True,
                            sampler=sampler,
                            num_workers=num_workers,
                            pin_memory=True,
