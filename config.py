@@ -29,9 +29,20 @@ def setup_cfg(args):
     else:
         args.multi_gpu = False
 
-    if args.exp_id is None:
-        args.exp_id = get_datetime()
-        # Tip: you can construct the exp_id automatically here by use the args.
+    if args.mode == 'train':
+        if args.exp_id is None:
+            args.exp_id = get_datetime()
+            # Tip: you can construct the exp_id automatically here by use the args.
+    else:
+        if args.exp_id is None:
+            args.exp_id = input("Please input exp_id: ")
+        if not os.path.exists(os.path.join(args.exp_dir, args.exp_id)):
+            all_existed_ids = os.listdir(args.exp_dir)
+            for existed_id in all_existed_ids:
+                if existed_id.startswith(args.exp_id + "-"):
+                    args.exp_id = existed_id
+                    print(f"Warning: exp_id is reset to {existed_id}.")
+                    break
 
     if args.debug:
         print("Warning: running in debug mode, some settings will be override.")
@@ -137,12 +148,11 @@ def parse_args():
 
     # Sampling related arguments
     parser.add_argument('--sample_id', type=str)
-    parser.add_argument('--sample_non_ema', type=str2bool, default=True,
-                        help='Whether we use the non-ema version model to sample?')
+    parser.add_argument('--sample_non_ema', type=str2bool, default=True, help='Also sample for non_ema model.')
 
     # Evaluation related arguments
-    parser.add_argument('--eval_iter', type=int, default=0, help='Use which iter to evaluate.')
-    parser.add_argument('--eval_use_ema', type=str2bool, default=False)
+    parser.add_argument('--eval_iter', type=int, help='Use which iter to evaluate.')
+    parser.add_argument('--eval_use_ema', type=str2bool, default=True, help='Use ema version model to evaluate.')
     parser.add_argument('--keep_all_eval_samples', type=str2bool, default=False)
     parser.add_argument('--keep_best_eval_samples', type=str2bool, default=True)
     parser.add_argument('--eval_repeat_num', type=int, default=1)

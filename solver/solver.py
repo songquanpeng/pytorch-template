@@ -229,13 +229,14 @@ class Solver:
     @torch.no_grad()
     def sample(self):
         args = self.args
-        assert args.eval_iter != 0
+        if args.eval_iter is None:
+            args.eval_iter = int(input("Please input eval_iter: "))
         self.load_model(args.eval_iter)
-        nets_ema = self.nets_ema
+        which_nets = self.nets_ema if args.eval_use_ema else self.nets
         if not args.sample_id:
             args.sample_id = get_datetime()
         sample_path = os.path.join(args.sample_dir, args.sample_id)
-        generate_samples(nets_ema, args, sample_path)
+        generate_samples(which_nets, args, sample_path)
         return sample_path
 
     @torch.no_grad()
