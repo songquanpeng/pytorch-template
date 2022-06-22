@@ -142,6 +142,7 @@ def parse_args():
 
     # Evaluation related arguments
     parser.add_argument('--eval_iter', type=int, default=0, help='Use which iter to evaluate.')
+    parser.add_argument('--eval_use_ema', type=str2bool, default=False)
     parser.add_argument('--keep_all_eval_samples', type=str2bool, default=False)
     parser.add_argument('--keep_best_eval_samples', type=str2bool, default=True)
     parser.add_argument('--eval_repeat_num', type=int, default=1)

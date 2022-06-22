@@ -1,6 +1,7 @@
 import datetime
 import os
 import time
+import functools
 
 import torch
 from torch import nn
@@ -58,6 +59,8 @@ class Solver:
         if self.use_tensorboard:
             from utils.logger import Logger
             self.logger = Logger(args.log_dir)
+        self.record = functools.partial(write_record, file_path=args.record_file)
+        self.record(f"Please notice eval_use_ema is set to {args.eval_use_ema}.")
 
     def init_weights(self):
         if self.args.init_weights == 'he':
@@ -121,6 +124,7 @@ class Solver:
 
         best_fid = 10000
         best_step = 0
+        best_count = 0
         print('Start training...')
         start_time = time.time()
         for step in range(args.start_iter + 1, args.end_iter + 1):
@@ -197,7 +201,8 @@ class Solver:
                     delete_model(args.model_dir, last_step)
 
             if step % args.eval_every == 0:
-                fid = calculate_total_fid(nets_ema, args, step, keep_samples=True)
+                which_nets = nets_ema if args.eval_use_ema else nets
+                fid = calculate_total_fid(which_nets, args, step, keep_samples=True)
                 if fid < best_fid:
                     # New best model existed, delete old best model's weights and samples.
                     if not args.keep_all_models:
@@ -206,13 +211,17 @@ class Solver:
                         delete_sample(args.eval_dir, best_step)
                     best_fid = fid
                     best_step = step
+                    # Yeah, we keep all history best models.
+                    self.save_model(best_count)
+                    self.record(f"New best model (fid: {fid:.4f}) saved on step {step}, marked as v{best_count}.")
+                    best_count += 1
                 else:
                     # Otherwise just delete the samples.
                     if not args.keep_all_eval_samples:
                         delete_sample(args.eval_dir, step)
                 info = f"step: {step} current fid: {fid:.2f} history best fid: {best_fid:.2f}"
                 send_message(info, args.exp_id)
-                write_record(info, args.record_file)
+                self.record(info)
         send_message("Model training completed.", args.exp_id)
         if not args.keep_best_eval_samples:
             delete_sample(args.eval_dir, best_step)
