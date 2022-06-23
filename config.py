@@ -12,7 +12,7 @@ from torch.backends import cudnn
 
 from utils.file import prepare_dirs, list_sub_folders
 from utils.file import save_json
-from utils.misc import get_datetime, str2bool, get_commit_hash
+from utils.misc import get_datetime, str2bool, get_commit_hash, start_tensorboard
 
 
 def setup_cfg(args):
@@ -65,6 +65,9 @@ def setup_cfg(args):
 
     if os.path.exists(f'./scripts/{args.exp_id}.sh'):
         shutil.copyfile(f'./scripts/{args.exp_id}.sh', os.path.join(args.exp_dir, args.exp_id, f'{args.exp_id}.sh'))
+    
+    if args.mode == 'train' and args.start_tensorboard:
+        start_tensorboard(os.path.join(args.exp_dir, args.exp_id), 'logs')
 
     args.domains = list_sub_folders(args.train_path, full_path=False)
     args.num_domains = len(args.domains)
@@ -178,6 +181,7 @@ def parse_args():
 
     # Log related arguments.
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
+    parser.add_argument('--start_tensorboard', type=str2bool, default=True)
     parser.add_argument('--save_loss', type=str2bool, default=True)
 
     # Others

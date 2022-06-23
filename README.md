@@ -4,6 +4,7 @@
 ## Features
 + [x] Well-organized project template out of the box.
 + [x] Automatically record the model version (by saving the git commit hash) for later reproduction.
++ [x] Automatically start TensorBoard for you.
 + [x] Use JSON file or command line arguments to specify arguments.
 + [x] The results of each experiment are properly stored.
 

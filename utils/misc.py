@@ -31,6 +31,13 @@ def get_commit_hash():
     return output[7:13]
 
 
+def start_tensorboard(working_dir, logdir='logs'):
+    try:
+        process = subprocess.Popen(['tensorboard', '--logdir', logdir, '--bind_all'], cwd=working_dir)
+    except FileNotFoundError as e:
+        print(f"Error: failed to start Tensorboard -- {e}")
+
+
 def str2bool(v):
     return v.lower() in ['true']
 
