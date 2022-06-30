@@ -172,6 +172,7 @@ def parse_args():
 
     # Loss hyper arguments.
     parser.add_argument('--lambda_adv', type=float, default=1)
+    parser.add_argument('--lambda_r1', type=float, default=1)
 
     # Step related arguments.
     parser.add_argument('--log_every', type=int, default=10)
