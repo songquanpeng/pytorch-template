@@ -177,18 +177,17 @@ class Solver:
                     N = args.batch_size
                     y_trg_list = [torch.tensor(y).repeat(N).to(self.device) for y in range(min(args.num_domains, 5))]
                     z_trg_list = torch.randn(repeat_num, 1, args.latent_dim).repeat(1, N, 1).to(self.device)
-                    translate_using_latent(which_nets, args, fixed_test_sample.x, y_trg_list, z_trg_list,
-                                           os.path.join(args.sample_dir, f"{sample_prefix}latent_test_{step}.jpg"))
-                    translate_using_latent(which_nets, args, fixed_train_sample.x, y_trg_list, z_trg_list,
-                                           os.path.join(args.sample_dir, f"{sample_prefix}latent_train_{step}.jpg"))
+                    translate_using_latent(which_nets, args, self.logger, fixed_test_sample.x, y_trg_list, z_trg_list,
+                                           f"{sample_prefix}test", step)
+                    translate_using_latent(which_nets, args, self.logger, fixed_train_sample.x, y_trg_list, z_trg_list,
+                                           f"{sample_prefix}train", step)
                     if args.selected_path:
                         N = fixed_selected_samples.shape[0]
                         y_trg_list = [torch.tensor(y).repeat(N).to(self.device) for y in
                                       range(min(args.num_domains, 5))]
                         z_trg_list = torch.randn(repeat_num, 1, args.latent_dim).repeat(1, N, 1).to(self.device)
-                        translate_using_latent(which_nets, args, fixed_selected_samples, y_trg_list, z_trg_list,
-                                               os.path.join(args.sample_dir,
-                                                            f"{sample_prefix}latent_selected_{step}.jpg"))
+                        translate_using_latent(which_nets, args, self.logger, fixed_selected_samples, y_trg_list, z_trg_list,
+                                               f"{sample_prefix}fixed", step)
 
                 training_sampler(nets_ema, 'ema_')
                 if args.sample_non_ema:

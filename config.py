@@ -161,6 +161,7 @@ def parse_args():
     parser.add_argument('--eval_repeat_num', type=int, default=1)
     parser.add_argument('--eval_batch_size', type=int, default=32)
     parser.add_argument('--eval_cache', type=str2bool, default=True, help="Cache what can be safely cached")
+    parser.add_argument('--eval_max_num', type=int, help="If set, this will be a limit")
 
     # Optimizing related arguments.
     parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate for generator.")

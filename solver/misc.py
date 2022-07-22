@@ -2,8 +2,9 @@ import copy
 import os
 
 import torch
-from tqdm import tqdm
 from torchvision.utils import make_grid
+from tqdm import tqdm
+
 from data.loader import get_eval_loader
 from utils.file import make_path, safe_filename
 from utils.image import save_image
@@ -30,7 +31,7 @@ def sample_image(nets, args, logger, ref_images, trg_latents, tag, step):
 
 
 @torch.no_grad()
-def translate_using_latent(nets, args, x_src, y_trg_list, z_trg_list, filename):
+def translate_using_latent(nets, args, logger, x_src, y_trg_list, z_trg_list, tag, step):
     x_concat = [x_src]
     for y_trg in y_trg_list:
         for z_trg in z_trg_list:
@@ -38,17 +39,21 @@ def translate_using_latent(nets, args, x_src, y_trg_list, z_trg_list, filename):
             x_fake = nets.generator(x_src, s_trg)
             x_concat += [x_fake]
     x_concat = torch.cat(x_concat, dim=0)
-    save_image(x_concat, x_src.size()[0], filename)
+    save_image(x_concat, x_src.size()[0], filename=os.path.join(args.sample_dir, safe_filename(f"{tag}_{step:06}.png")))
+    x = make_grid(x_concat, x_src.shape[0], normalize=True)
+    logger.image_summary(tag, x, step)
 
 
 @torch.no_grad()
-def translate_using_label(nets, args, x_src, y_trg_list, filename):
+def translate_using_label(nets, args, logger, x_src, y_trg_list, tag, step):
     x_concat = [x_src]
     for y_trg in y_trg_list:
         x_fake = nets.generator(x_src, y_trg)
         x_concat += [x_fake]
     x_concat = torch.cat(x_concat, dim=0)
-    save_image(x_concat, x_src.size()[0], filename)
+    save_image(x_concat, x_src.size()[0], filename=os.path.join(args.sample_dir, safe_filename(f"{tag}_{step:06}.png")))
+    x = make_grid(x_concat, x_src.shape[0], normalize=True)
+    logger.image_summary(tag, x, step)
 
 
 @torch.no_grad()
@@ -63,6 +68,7 @@ def generate_samples(nets, args, path):
                 continue
             save_path = os.path.join(path, f"{src_domain}2{trg_domain}")
             make_path(save_path)
+            count = 0
             for i, query_image in enumerate(tqdm(loader, total=len(loader))):
                 N = query_image.size(0)
                 query_image = query_image.to(args.device)
@@ -74,5 +80,10 @@ def generate_samples(nets, args, path):
                     generated_image = nets.generator(query_image, style_code)
                     images.append(generated_image)
                     for k in range(N):
-                        filename = os.path.join(save_path, f"{i * args.eval_batch_size + k}_{j}.png")
+                        filename = os.path.join(save_path, f"{i * args.eval_batch_size + k:06}_{j}.png")
                         save_image(generated_image[k], col_num=1, filename=filename)
+                        count += 1
+            if args.eval_max_num and count >= args.eval_max_num:
+                break
+            if args.debug:
+                break
