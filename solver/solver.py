@@ -189,9 +189,9 @@ class Solver:
                         translate_using_latent(which_nets, args, self.logger, fixed_selected_samples, y_trg_list, z_trg_list,
                                                f"{sample_prefix}fixed", step)
 
-                training_sampler(nets_ema, 'ema_')
+                training_sampler(nets_ema, 'EMA/')
                 if args.sample_non_ema:
-                    training_sampler(nets)
+                    training_sampler(nets, "NON_EMA/")
 
             if step % args.save_every == 0:
                 self.save_model(step)
