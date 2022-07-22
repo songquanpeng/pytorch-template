@@ -183,7 +183,7 @@ def parse_args():
 
     # Log related arguments.
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
-    parser.add_argument('--start_tensorboard', type=str2bool, default=True)
+    parser.add_argument('--start_tensorboard', type=str2bool, default=False)
     parser.add_argument('--save_loss', type=str2bool, default=True)
 
     # Others
