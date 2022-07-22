@@ -138,7 +138,7 @@ def parse_args():
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--train_path', type=str, required=True)
     parser.add_argument('--test_path', type=str, required=True)
-    parser.add_argument('--eval_path', type=str, required=True)
+    parser.add_argument('--compare_path', type=str, required=True, help="For metrics calculation")
     parser.add_argument('--selected_path', type=str, required=False)
     parser.add_argument('--num_domains', type=int)
     parser.add_argument('--domains', type=str, nargs='+')

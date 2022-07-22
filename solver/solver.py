@@ -241,8 +241,8 @@ class Solver:
     @torch.no_grad()
     def evaluate(self):
         args = self.args
-        assert args.eval_path != "", "eval_path shouldn't be empty"
-        target_path = args.eval_path
+        assert args.compare_path != "", "compare_path shouldn't be empty"
+        target_path = args.compare_path
         sample_path = self.sample()
         fid = calculate_fid_given_paths(paths=[target_path, sample_path], img_size=args.img_size,
                                         batch_size=args.eval_batch_size)
