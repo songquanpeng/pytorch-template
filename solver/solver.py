@@ -219,6 +219,7 @@ class Solver:
                     if not args.keep_all_eval_samples:
                         delete_sample(args.eval_dir, step)
                 info = f"step: {step} current fid: {fid:.2f} history best fid: {best_fid:.2f}"
+                self.logger.scalar_summary(f"METRIC/FID", fid, step)
                 send_message(info, args.exp_id)
                 self.record(info)
         send_message("Model training completed.", args.exp_id)
