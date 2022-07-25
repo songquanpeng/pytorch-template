@@ -65,7 +65,7 @@ def setup_cfg(args):
 
     if os.path.exists(f'./scripts/{args.exp_id}.sh'):
         shutil.copyfile(f'./scripts/{args.exp_id}.sh', os.path.join(args.exp_dir, args.exp_id, f'{args.exp_id}.sh'))
-    
+
     if args.mode == 'train' and args.start_tensorboard:
         start_tensorboard(os.path.join(args.exp_dir, args.exp_id), 'logs')
 
@@ -171,9 +171,10 @@ def parse_args():
     parser.add_argument('--weight_decay', type=float, default=1e-4)
     parser.add_argument('--ema_beta', type=float, default=0.999)
 
-    # Loss hyper arguments.
+    # Loss related arguments.
     parser.add_argument('--lambda_adv', type=float, default=1)
     parser.add_argument('--lambda_r1', type=float, default=1)
+    parser.add_argument('--which_lpips', type=str, default='alex', choices=['alex', 'vgg'])
 
     # Step related arguments.
     parser.add_argument('--log_every', type=int, default=10)

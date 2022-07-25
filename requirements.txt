@@ -7,3 +7,4 @@ tqdm~=4.64.0
 scipy~=1.8.1
 tensorboardx~=2.2
 torch~=1.8.2+cu102
+lpips~=0.1.4

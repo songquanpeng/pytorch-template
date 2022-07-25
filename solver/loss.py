@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as F
 from munch import Munch
 
+lpips_loss_fn = None
+
 
 def compute_d_loss(nets, args, sample_org, sample_ref):
     # Real images
@@ -58,3 +60,11 @@ def r1_reg(d_out, x_in):
     assert (grad_dout2.size() == x_in.size())
     reg = 0.5 * grad_dout2.view(batch_size, -1).sum(1).mean(0)
     return reg
+
+
+def calc_lpips_loss(args, x1, x2):
+    global lpips_loss_fn
+    if not lpips_loss_fn:
+        import lpips
+        lpips_loss_fn = lpips.LPIPS(net=args.which_lpips).cuda()
+    return lpips_loss_fn(x1, x2).mean()
