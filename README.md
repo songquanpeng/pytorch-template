@@ -9,7 +9,7 @@
 + [x] The results of each experiment are properly stored.
 
 
-## Steps For Using This Template
+## Steps
 1. Modifiy the model structures `models/build.py`.
 2. Update the loss functions used `solver/loss.py`.
 3. Update the data loading process `data/dataset.py` & `data/loader.py`.
