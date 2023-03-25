@@ -10,13 +10,13 @@
 
 
 ## Steps For Using This Template
-1. Modifiy the model structures `models/build.py`.
+1. Modify the model structures `models/build.py`.
 2. Update the loss functions used `solver/loss.py`.
 3. Update the data loading process `data/dataset.py` & `data/loader.py`.
 4. Add metrics that can measure your model's performance `metrics/eval.py`.
-5. Update sampling functions & logging functions so you can see the results with TensorBoard `solver/solver.py`!
+5. Update sampling functions & logging functions, so you can see the results with TensorBoard `solver/solver.py`!
 6. Add a shell script that run your model `scripts/{exp_id}-model_key_config.sh`.
-7. Start training, evaluating or inferencing by running the above script!
+7. Start training, evaluating or inference by running the above script!
 
 ## Structures
 ```
